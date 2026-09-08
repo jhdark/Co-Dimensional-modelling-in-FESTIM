@@ -102,10 +102,34 @@
 \label{sec:intro}
 % ===============================================================
 
+\begin{itemize}
+    \item Hydrogen isotope transport sets fuel retention, permeation losses and tritium accountancy in fusion systems~\cite{meschini_impact_2025, meschini_modeling_2023}.
+    \item Macroscopic codes (\FESTIM{}~\cite{dark_festim_2026}, \TMAP{}8~\cite{simon_moose-based_2025}, \textsc{tessim-x}~\cite{schmid_implications_2024}, \MHIMS{}~\cite{hodille_macroscopic_2015}) solve bulk diffusion and trapping on a meshed domain.
+    \item Real components contain features far thinner than the component itself: grain boundaries, oxide layers, cracks, coolant channels, and the interfaces between materials.
+    \item These features often set the answer, and they resist meshing: resolving them drives the cell count and the aspect ratio of the mesh.
+    \item The usual responses each discard something. Homogenise the feature into an effective bulk property and it loses its own state; reduce it to an algebraic condition on the bulk traces and it loses its own transport and its inventory; couple it externally to a system code and the coupling is no longer monolithic.
+    \item \KEY{Contribution: a co-dimensional description, in which the feature is a subdomain of one dimension less than the mesh, carrying its own transport equation and coupled to the bulk by a flux.}
+    \item Implemented in \FESTIM{}~\cite{dark_festim_2026}, open source, released in v2.2. \VERIFY{release version and date at submission}
+    \item Three applications: a 1D plug-flow model of a coolant channel coupled to a 2D/3D pipe wall; interfaces carrying their own inventory (W/Cu, Be/BeO); grain-boundary networks in Voronoi polycrystals.
+    \item Relation to the companion paper: there an interface is a reactive surface with no stored inventory; here it is a subdomain with its own state. \TODO{cite the companion once it has a number}
+    \item \TODO{Say plainly what the paper claims beyond capability. Candidate: the co-dimensional description is the right default for a thin feature that carries its own state, and the cases where an algebraic condition or a homogenised property suffice are narrower than current practice assumes.}
+\end{itemize}
+
 % ===============================================================
 \section{Motivation}
 \label{sec:motivation}
 % ===============================================================
+
+\begin{itemize}
+    \item The thin-feature problem, quantified: a grain boundary is nanometres wide inside a millimetre-scale component, an oxide layer micrometres. \TODO{numbers and citations for representative widths}
+    \item Resolving such a feature with cells costs elements, aspect ratio and conditioning, and the cost is paid everywhere the feature runs, not only where it matters.
+    \item \textbf{Treatment 1: homogenisation.} Fold the feature into an effective diffusivity or solubility. Loses the feature's own field, so it cannot report the inventory held in the feature or the flux carried along it, and it assumes the two phases stay locally equilibrated. \TODO{cite: Hart-type effective diffusivity, short-circuit diffusion}
+    \item \textbf{Treatment 2: an algebraic interface condition.} Continuity of chemical potential imposed on the traces. Assumes instantaneous equilibration and no stored inventory, which molecular dynamics at Be/BeO~\cite{hodille_molecular_2022} and rate-equation modelling at W/Cu~\cite{silva-solis_hydrogen_2026} both contradict.
+    \item \textbf{Treatment 3: external coupling.} Hand the feature to a separate 0D or 1D system model and couple by exchanged boundary data~\cite{meschini_modeling_2023}. Separate solver, separate time step, and the coupling is explicit. \TODO{cite a system code, e.g. PathSim}
+    \item \KEY{A co-dimensional subdomain keeps what all three discard: its own field, its own transport terms, its own boundary conditions and exports, assembled monolithically with the bulk into a single nonlinear solve.}
+    \item The mathematics is not new. Mixed-dimensional coupling is established for flow in fractured porous media and for 1D--3D vascular problems. \TODO{cite: D'Angelo \& Quarteroni; Boon, Nordbotten \& Yotov; Laurino \& Zunino; Kuchta et al.}
+    \item What is new is its availability in a macroscopic hydrogen transport code, alongside trapping, multi-species reactions and the rest of the physics such a code already carries. \VERIFY{that no other H-transport code offers this}
+\end{itemize}
 
 % TODO(structure): section title. Alternatives: "Methodology",
 %   "Co-dimensional formulation and its implementation".
@@ -119,20 +143,67 @@
 \label{sec:method:governing}
 % ---------------------------------------------------------------
 
+\begin{itemize}
+    \item Setting: a domain $\Omega$ of dimension $d$, partitioned into volume subdomains, with a manifold $\Gamma$ of dimension $d-1$ embedded in it.
+    \item Bulk equation, unchanged from \FESTIM{} v2~\cite{dark_festim_2026}: $\partial_t c = \nabla\cdot(D\nabla c) + S$ per subdomain, with trapping and reactions available as usual.
+    \item Manifold equation: the same balance written with the tangential gradient $\nabla_\Gamma$, with its own diffusivity, and with an advection velocity projected onto $\Gamma$. \TODO{write the equation, and define $\nabla_\Gamma$}
+    \item Coupling is written twice: the same exchange $J$ leaves the bulk as a flux through $\Gamma$ and enters $\Gamma$ as a source. \TODO{equation pair}
+    \item $\Gamma$ may sit on the outer boundary, be buried inside one subdomain, separate two subdomains, or be adjacent to as many subdomains as a grain-boundary network has grains.
+    \item The exchange law is a property of the (manifold, adjacent subdomain) pair, not of a branch of the manifold, so a network with different kinetics on each grain is expressible.
+    \item The form of $J$ is the user's. A linear $J = k\,(c_\mathrm{b} - c_\Gamma)$ is the simplest; a mass-action law recovers the kinetic interface channels of the companion paper. \TODO{cite companion}
+    \item \paragraph{Units} The manifold variable has no imposed convention: a volumetric concentration for a layer of thickness $\lambda$ (source $J/\lambda$), an areal density for an adsorbed layer (source $J$), or a line density. A flux boundary condition is per unit area and a source is per unit volume, so the two halves of the exchange are not dimensionally identical.
+    \item \KEY{Fix one convention here and use it throughout the paper, and say which.} \TODO{decide: areal density is the natural one for the interface application, volumetric for the coolant channel. Check whether one convention covers all three applications.}
+    \item Limits worth stating: a manifold with fast exchange and negligible capacity approaches an algebraic interface condition; a manifold with a thickness $\lambda$ should reproduce a resolved layer of that thickness. \TODO{verify both, analytically if possible}
+\end{itemize}
+
 % ---------------------------------------------------------------
 \subsection{Weak formulation and mixed-dimensional assembly}
 \label{sec:method:weak}
 % ---------------------------------------------------------------
+
+\begin{itemize}
+    \item The residual cannot be written as a single form. The manifold gradient is only defined on a measure whose domain is the submesh, while the terms coupling the manifold field to the bulk field must be integrated on the parent mesh, because a bulk function cannot be resolved inside a codim-1 integral.
+    \item \textsc{dolfinx}~\cite{baratta_dolfinx_2023} compiles one integration domain per form, so the residual is split into groups, one blocked form list per integration domain.
+    \item The groups are accumulated into the same vector and matrix through custom nonlinear-solver callbacks, so the system stays monolithic: one nonlinear solve, one Jacobian, no operator splitting and no sub-iteration between the manifold and the bulk.
+    \item An interior manifold is integrated over interior facets, where each term must be restricted to one side. Consequently a single exchange term may not read the bulk concentrations of both sides at once; one exchange is declared per adjacent subdomain.
+    \item Beyond two adjacent subdomains the two-sided restriction has no meaning, since past a triple junction the network runs between a different pair of grains. Each adjacent subdomain therefore gets its own integral on which it is the positive side, and a facet shared by two grains is integrated once per grain.
+    \item The manifold is tagged in the facet meshtags rather than the cell meshtags, so its identifier shares a namespace with the surface subdomains.
+    \item \TODO{Decide how much of this belongs in the main text and how much in an appendix. The restriction argument is load-bearing for Application 3 and should stay.}
+    \item \TODO{cite scifem, used for the interface data}
+\end{itemize}
 
 % ---------------------------------------------------------------
 \subsection{\FESTIM{} user API}
 \label{sec:method:api}
 % ---------------------------------------------------------------
 
+\begin{itemize}
+    \item A manifold is declared as a \texttt{VolumeSubdomain} whose \texttt{dim} is one less than the mesh dimension, with a \texttt{locator}. \TODO{code listing}
+    \item It can be used directly wherever a surface is expected, for instance as the subdomain of a flux boundary condition, with no separate surface subdomain on the same facets.
+    \item The exchange is a \texttt{ParticleFluxBC} on the bulk paired with a \texttt{ParticleSource} on the manifold, with \texttt{species\_dependent\_value} carrying both concentrations across the two meshes. \TODO{code listing}
+    \item Available on a manifold: advection with an ambient velocity vector that self-projects onto $\Gamma$, drift terms, reactions, implicit species, fixed-concentration conditions on the ends of the manifold, and an outflow condition at an outlet.
+    \item An end of a manifold with nothing imposed on it is a closed end, carrying zero total flux with advection balanced by back-diffusion. This is a trap for users and worth one sentence.
+    \item Exports: surface fluxes and derived quantities on the manifold and on its boundary.
+    \item A pair of subdomains is separated either by an algebraic interface condition or by a manifold, never both; \FESTIM{} raises if the two cover the same facets.
+    \item \paragraph{Mesh caveat} The manifold is meshed by the facets of the parent mesh, so resolution along the feature is inherited from the bulk mesh. A wall needing few cells through its thickness may still need many along its length to resolve what happens on the manifold.
+\end{itemize}
+
 % ---------------------------------------------------------------
 \subsection{Verification}
 \label{sec:method:verification}
 % ---------------------------------------------------------------
+
+\begin{itemize}
+    \item Method of manufactured solutions on a tilted manifold in 3D, so the tangential operator is exercised away from a mesh-aligned plane.
+    \item An interior manifold between two bulk subdomains against the analytical steady state of the equivalent series chain, with different exchange rates on the two sides.
+    \item Particle conservation across an interior manifold, and balance of the exported fluxes at steady state.
+    \item Independence of the result from the order in which subdomains are declared, which the arbitrary facet restriction would otherwise leak into the answer.
+    \item A transient run reaching the steady solution, and exact integration of a time-dependent source on the manifold.
+    \item A three-grain network against the 1D series chain, and a triple junction feeding every grain through one network.
+    \item Fixed concentration on the ends of a manifold against the analytical solution, and the outlet flux of a manifold carrying advection.
+    \item These run in the \FESTIM{} continuous integration suite. \TODO{decide which go in the paper as figures, which are named as tests, and which move to an appendix}
+    \item \TODO{Is a spatial convergence study wanted, showing the expected order for the coupled problem? It is the one thing the test suite checks that a reader cannot see.}
+\end{itemize}
 
 % ===============================================================
 \section{Application 1: coupling a 1D flow model to a 2D/3D component}
@@ -144,10 +215,31 @@
 \label{sec:app:pfr:setup}
 % ---------------------------------------------------------------
 
+\begin{itemize}
+    \item Question the application answers: how much tritium leaves a component with the coolant, without meshing the coolant as a fluid domain.
+    \item Motivating systems: fluoride-salt loops and blanket coolant circuits~\cite{forsberg_fusion_2020, fuerst_molten_2025, yang_quantifying_2026}.
+    \item Geometry: a pipe wall with the channel as a manifold running along its surface. \TODO{2D first, then 3D? Decide whether both are shown}
+    \item The manifold carries a plug-flow model: advection along the channel, exchange with the wall, and an axial dispersion term. \TODO{equation}
+    \item The plug-flow reduction assumes a well-mixed cross-section and negligible axial dispersion relative to advection, so the manifold field is a cross-section-averaged concentration.
+    \item Wall-to-coolant exchange through a mass-transfer coefficient. \TODO{cite a Sherwood correlation, and say whether it is taken as constant or evaluated along the channel}
+    \item Conditions: loaded inner wall, clean inlet, outflow at the outlet.
+    \item Exports: the permeation flux from the wall into the channel, and the pickup carried out at the outlet; these balance at steady state.
+    \item Numerical caveat to report: the cell P\'eclet number along the channel is set by the parent mesh, so the wall may need far more cells along its length than through its thickness.
+    \item \TODO{Parameters. Nothing here is fabricated: take the geometry and transport properties from a named source or from the user, and pin them in a parameters script.}
+\end{itemize}
+
 % ---------------------------------------------------------------
 \subsection{Results}
 \label{sec:app:pfr:results}
 % ---------------------------------------------------------------
+
+\begin{itemize}
+    \item Verification: against a model that resolves the coolant as a full fluid subdomain, and against the analytical plug-flow solution. \TODO{which of the two, or both}
+    \item Sweep: outlet concentration and total pickup against flow velocity, against the mass-transfer coefficient, and against wall thickness. \TODO{confirm the sweep variables}
+    \item Identify where the plug-flow reduction breaks down, i.e. where the resolved model and the manifold model part company. This is the result that makes the section an argument and not a demonstration.
+    \item Cost comparison: cells and solve time against the resolved model.
+    \item Contrast with the usual practice of coupling a component model to a separate system code, where the exchange is explicit and the time steps are not shared.
+\end{itemize}
 
 % ===============================================================
 \section{Application 2: interfaces carrying their own inventory}
@@ -159,10 +251,28 @@
 \label{sec:app:interface:setup}
 % ---------------------------------------------------------------
 
+\begin{itemize}
+    \item The companion paper treats an interface as a reactive surface with no stored inventory. Here the interface is a manifold with its own field, so it holds an inventory and responds on its own time scale.
+    \item Physical basis at Be/BeO: molecular dynamics finds trapping sites localised at the interface and equilibrium not reached even at \qty{1500}{\kelvin}~\cite{hodille_molecular_2022}.
+    \item Physical basis at W/Cu: solution energies at the interface~\cite{silva-solis_solution_2024}, and a combined density-functional and rate-equation treatment showing the steady state at a flux-carrying interface is not the equilibrium state~\cite{silva-solis_hydrogen_2026}.
+    \item Model: a manifold between two volume subdomains, carrying an areal density of interfacial sites, exchanging with each side through its own kinetic rates.
+    \item This is a co-dimensional realisation of the interfacial trapping picture of~\cite{silva-solis_hydrogen_2026}. \VERIFY{that the formulations agree, and say where they differ}
+    \item Recovery of the algebraic condition: fast exchange on both sides with negligible interfacial capacity should return continuity of chemical potential. \TODO{derive, and verify numerically}
+    \item \TODO{Parameters for both systems must come from the cited papers or from the user. Do not fabricate site densities, rates or energies.}
+\end{itemize}
+
 % ---------------------------------------------------------------
 \subsection{Results}
 \label{sec:app:interface:results}
 % ---------------------------------------------------------------
+
+\begin{itemize}
+    \item W/Cu: transient filling of the interface, the delay it introduces in breakthrough, and the steady flux against the algebraic condition.
+    \item Be/BeO: the same readouts, at temperatures where the molecular dynamics says equilibrium is not reached.
+    \item The interfacial inventory itself, which an algebraic condition cannot represent at all, and which is the clearest reason to prefer the co-dimensional description.
+    \item \TODO{Is the comparison against the published rate-equation results of~\cite{silva-solis_hydrogen_2026}, or only against an algebraic-condition baseline run in \FESTIM{}? The former is much stronger and should be attempted.}
+    \item Honest caveat, kept and not softened: these are demonstrations on published parameters, not validations against permeation data.
+\end{itemize}
 
 % ===============================================================
 \section{Application 3: grain-boundary transport in a polycrystal}
@@ -174,25 +284,65 @@
 \label{sec:app:gb:setup}
 % ---------------------------------------------------------------
 
+\begin{itemize}
+    \item Grain boundaries act as short-circuit paths, with a diffusivity orders of magnitude above the lattice value and a solubility of their own. \TODO{cite: Fisher model, Harrison A/B/C regimes, short-circuit diffusion data}
+    \item Model: every grain is its own volume subdomain, so the concentration is free to jump from one grain to the next, and the whole boundary network is one manifold subdomain adjacent to all of them.
+    \item The exchange rate is a property of the (network, grain) pair, so grains may exchange at different rates without splitting the network.
+    \item Triple junctions are handled by giving each adjacent grain its own integral, as described in Sec.~\ref{sec:method:weak}.
+    \item Geometries from Voronoi tessellations: a 2D polycrystal with 1D boundaries, and a 3D polycrystal with 2D boundaries. \TODO{cite the generator, e.g. Neper or scipy}
+    \item \TODO{Material and parameters. Tungsten is the obvious choice given the fusion framing, but the lattice and boundary transport properties must be sourced, not assumed.}
+\end{itemize}
+
 % ---------------------------------------------------------------
 \subsection{Results}
 \label{sec:app:gb:results}
 % ---------------------------------------------------------------
+
+\begin{itemize}
+    \item Through-thickness flux and breakthrough time against the diffusivity contrast $D_\Gamma/D$, against grain size, and against the exchange rate.
+    \item Partition of the inventory between grains and boundaries, which is what a homogenised model cannot report.
+    \item Comparison with a homogenised effective diffusivity, identifying where it holds and where it fails. \TODO{cite the homogenisation used, and check which Harrison regime each case sits in}
+    \item 2D against 3D: whether a 2D polycrystal over-predicts connectivity of the network, and by how much.
+    \item Cost against a mesh that resolves the boundary width, which for a nanometre-wide boundary in a millimetre-scale sample is the point of the whole exercise.
+    \item \TODO{Decide whether any experimental comparison is available, or whether this section is explicitly a capability demonstration.}
+\end{itemize}
 
 % ===============================================================
 \section{Discussion}
 \label{sec:discussion}
 % ===============================================================
 
+\begin{itemize}
+    \item When a co-dimensional description is the right choice: the feature is thin compared with the scale over which the bulk concentration varies, and it carries either its own state or its own transport.
+    \item When it is not: when the profile across the feature matters, or when its thickness is comparable to the bulk gradient scale, in which case it should be resolved.
+    \item Relation to an algebraic interface condition: the two are mutually exclusive on the same facets, and the manifold approaches the algebraic condition in the limit of fast exchange and vanishing capacity. The choice is therefore not either/or but a question of which limit the physics sits in.
+    \item Relation to homogenisation: the applications give three cases where the effective-property route loses something specific and measurable.
+    \item The unit convention for the manifold variable is a genuine hazard for users, and worth restating here.
+    \item Resolution along the manifold is inherited from the parent mesh, which is the main practical constraint on the method.
+    \item Cost, collected across the three applications. \TODO{fill in once the numbers exist}
+\end{itemize}
+
 % ---------------------------------------------------------------
 \subsection{Limitations and future work}
 \label{sec:discussion:limitations}
 % ---------------------------------------------------------------
 
+\begin{itemize}
+    \item Codimension 2, a line embedded in a 3D mesh, is not covered here. \VERIFY{what the implementation supports}
+    \item Parallel execution: some of the network cases are currently serial only. \VERIFY{status at submission}
+    \item The exchange coefficient is the real gap. The formulation is only as good as the mass-transfer or trapping kinetics supplied to it, and for most interfaces those are not measured.
+    \item Coupling to the kinetic interface channels of the companion paper, so a manifold can carry both an inventory and competing reaction channels.
+    \item Adaptivity, and evolving manifolds such as a growing oxide or a propagating crack.
+\end{itemize}
+
 % ===============================================================
 \section{Conclusions}
 \label{sec:conclusions}
 % ===============================================================
+
+\begin{itemize}
+    \item \TODO{Write last. One bullet per claim actually established by Secs. 4--6, and nothing that the applications do not support.}
+\end{itemize}
 
 % ===============================================================
 % \section*{Acknowledgements}
@@ -202,6 +352,12 @@
 \section{Data availability}
 \label{sec:data}
 % ===============================================================
+
+\begin{itemize}
+    \item \TODO{Repository URL and Zenodo DOI once minted.}
+    \item Every figure produced by a script in the repository; sweeps write the data they plot.
+    \item The implementation is in \FESTIM{}~\cite{dark_festim_2026}. \TODO{name the release and the test files}
+\end{itemize}
 
 % ===============================================================
 \appendix
