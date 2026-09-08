@@ -45,7 +45,8 @@ conda activate codim-env
 latexmk -pdf main.tex
 ```
 
-The class options are `[preprint,11pt]` for drafting and `[5p]` for submission.
+The class is `elsarticle` with `[5p]`. `[preprint,11pt]` is available for
+drafting a single-column version.
 
 Building requires a local LaTeX installation (`elsarticle`, `siunitx` v3); the
 manuscript is otherwise built on Overleaf, which this repository is synced to.

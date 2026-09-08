@@ -24,8 +24,9 @@ so it inherits that paper's preamble, styling, working rules and bibliography.
 - `scripts/`: empty apart from `environment.yml` (conda env `codim-env`) and a
   stub README.
 
-Class: `elsarticle`, `[preprint,11pt]` for drafting (set now), `[5p]` for
-submission. Target journal is set to **Fusion Engineering and Design** (see the
+Class: `elsarticle`, `[5p]` throughout (the companion paper's look, which this
+paper keeps). `[preprint,11pt]` is available for drafting but is not what the
+authors want to see. Target journal is set to **Fusion Engineering and Design** (see the
 `TODO(journal)` comment for the alternatives considered).
 
 There is **no LaTeX toolchain installed** (`latexmk`, `pdflatex`, `tectonic` all
@@ -62,10 +63,11 @@ Section list, as in `main.tex` (headings only so far, no bullets, no prose):
    cost of resolving them in the mesh, existing treatments and what they discard,
    what a co-dimensional description adds.
 3. **Co-dimensional modelling in FESTIM** (the methodology / implementation
-   section): governing equations on a manifold, coupling to the bulk, choice of
-   manifold variable and units, weak formulation and mixed-dimensional assembly,
-   networks and junctions, the transport terms available, exports, user API,
-   verification.
+   section), in four subsections: governing equations and coupling to the bulk;
+   weak formulation and mixed-dimensional assembly; the FESTIM user API;
+   verification. Networks and junctions, the choice of manifold variable and its
+   units, the available transport terms and the exports each get a paragraph
+   inside one of those, not a subsection of their own.
 4. **Application 1**: coupling a 1D flow model to a 2D/3D component. A plug-flow
    reactor model of the coolant carried on a manifold, coupled to a 2D/3D pipe
    wall, all inside FESTIM rather than through an external system code.
@@ -84,10 +86,20 @@ The three applications are three top-level sections, not subsections of one
 "Applications" section, because each carries its own setup and results. Collapse
 them into one section if the page count demands it.
 
+**Keep the subsection count down.** Each application has exactly two
+subsections, "Model setup" and "Results"; the discussion has one, "Limitations
+and future work"; the introduction, motivation and conclusions have none. An
+earlier skeleton had 32 subsections and was cut to 11 on 2026-09-08. Do not
+reintroduce a subsection for every idea: in a two-column `[5p]` layout a
+subsection heading every few paragraphs fragments the argument. Use paragraphs,
+or `\paragraph{}` where a run-in heading genuinely helps.
+
 Still open:
 
-- Verification is currently a subsection of the methodology section. Promote it
-  to a top-level section if the verification cases grow.
+- Verification is a subsection of the methodology section. Promote it to a
+  top-level section only if the verification cases grow enough to need it.
+- Author order. Ian Wojtowicz (University of Minnesota) is currently appended
+  last; order is not settled.
 - Which appendices are needed.
 - Whether the companion interface paper is cited as in-prep or submitted.
 - Isotope/multi-species scope: nothing in the plan requires more than one species

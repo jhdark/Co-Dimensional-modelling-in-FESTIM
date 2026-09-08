@@ -1,4 +1,4 @@
-\documentclass[preprint,11pt]{elsarticle}
+\documentclass[5p]{elsarticle}
 \usepackage{newtxtext}  % <- needed for some fonts apparently
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -78,10 +78,13 @@
 % TODO(title): provisional, pick one once the framing is settled.
 \title{Co-Dimensional coupling with FESTIM}
 
+% TODO(authors): order is provisional, Ian appended last.
 \author[mit]{Remi Delaporte-Mathurin}
 \author[mit]{James Dark}
+\author[umn]{Ian Wojtowicz}
 
 \address[mit]{Massachusetts Institute of Technology, Cambridge, MA, USA}
+\address[umn]{Department of Mechanical Engineering, University of Minnesota, 111 Church Street SE, Minneapolis, MN 55455, USA}
 
 \begin{abstract}
 \TODO{Abstract. Write last, once the argument in Sec.~\ref{sec:intro} is settled.}
@@ -104,66 +107,21 @@
 \label{sec:motivation}
 % ===============================================================
 
-% ---------------------------------------------------------------
-\subsection{Thin and lower-dimensional features in hydrogen transport}
-\label{sec:motivation:features}
-% ---------------------------------------------------------------
-
-% ---------------------------------------------------------------
-\subsection{The cost of resolving them in the mesh}
-\label{sec:motivation:meshing}
-% ---------------------------------------------------------------
-
-% ---------------------------------------------------------------
-\subsection{Existing treatments and what they discard}
-\label{sec:motivation:existing}
-% ---------------------------------------------------------------
-
-% ---------------------------------------------------------------
-\subsection{What a co-dimensional description adds}
-\label{sec:motivation:codim}
-% ---------------------------------------------------------------
-
+% TODO(structure): section title. Alternatives: "Methodology",
+%   "Co-dimensional formulation and its implementation".
 % ===============================================================
-% TODO(structure): section title. Alternatives considered:
-%   "Methodology", "Co-dimensional formulation and its implementation".
 \section{Co-dimensional modelling in \FESTIM{}}
 \label{sec:method}
 % ===============================================================
 
 % ---------------------------------------------------------------
-\subsection{Governing equations on a manifold}
+\subsection{Governing equations and coupling to the bulk}
 \label{sec:method:governing}
-% ---------------------------------------------------------------
-
-% ---------------------------------------------------------------
-\subsection{Coupling to the bulk}
-\label{sec:method:coupling}
-% ---------------------------------------------------------------
-
-% ---------------------------------------------------------------
-\subsection{Choice of manifold variable and its units}
-\label{sec:method:units}
 % ---------------------------------------------------------------
 
 % ---------------------------------------------------------------
 \subsection{Weak formulation and mixed-dimensional assembly}
 \label{sec:method:weak}
-% ---------------------------------------------------------------
-
-% ---------------------------------------------------------------
-\subsection{Manifold networks, junctions and multiple adjacent volumes}
-\label{sec:method:networks}
-% ---------------------------------------------------------------
-
-% ---------------------------------------------------------------
-\subsection{Boundary conditions, sources, reactions, advection and drift}
-\label{sec:method:terms}
-% ---------------------------------------------------------------
-
-% ---------------------------------------------------------------
-\subsection{Derived quantities and exports on a manifold}
-\label{sec:method:exports}
 % ---------------------------------------------------------------
 
 % ---------------------------------------------------------------
@@ -182,18 +140,8 @@
 % ===============================================================
 
 % ---------------------------------------------------------------
-\subsection{A plug-flow model of the coolant as a manifold}
-\label{sec:app:pfr:model}
-% ---------------------------------------------------------------
-
-% ---------------------------------------------------------------
-\subsection{Setup: permeation through a pipe wall into the flow}
+\subsection{Model setup}
 \label{sec:app:pfr:setup}
-% ---------------------------------------------------------------
-
-% ---------------------------------------------------------------
-\subsection{Verification against a resolved model}
-\label{sec:app:pfr:verification}
 % ---------------------------------------------------------------
 
 % ---------------------------------------------------------------
@@ -207,28 +155,13 @@
 % ===============================================================
 
 % ---------------------------------------------------------------
-\subsection{Interfacial trapping and the limits of an algebraic interface condition}
-\label{sec:app:interface:why}
-% ---------------------------------------------------------------
-
-% ---------------------------------------------------------------
-\subsection{Setup: an interface concentration with exchange kinetics on both sides}
+\subsection{Model setup}
 \label{sec:app:interface:setup}
 % ---------------------------------------------------------------
 
 % ---------------------------------------------------------------
-\subsection{W/Cu}
-\label{sec:app:interface:wcu}
-% ---------------------------------------------------------------
-
-% ---------------------------------------------------------------
-\subsection{Be/BeO}
-\label{sec:app:interface:bebeo}
-% ---------------------------------------------------------------
-
-% ---------------------------------------------------------------
-\subsection{Comparison with local thermodynamic equilibrium}
-\label{sec:app:interface:lte}
+\subsection{Results}
+\label{sec:app:interface:results}
 % ---------------------------------------------------------------
 
 % ===============================================================
@@ -237,44 +170,19 @@
 % ===============================================================
 
 % ---------------------------------------------------------------
-\subsection{Grain boundaries as a manifold network}
-\label{sec:app:gb:model}
+\subsection{Model setup}
+\label{sec:app:gb:setup}
 % ---------------------------------------------------------------
 
 % ---------------------------------------------------------------
-\subsection{Generating the polycrystal: Voronoi tessellations}
-\label{sec:app:gb:voronoi}
-% ---------------------------------------------------------------
-
-% ---------------------------------------------------------------
-\subsection{A 2D polycrystal with 1D grain boundaries}
-\label{sec:app:gb:2d}
-% ---------------------------------------------------------------
-
-% ---------------------------------------------------------------
-\subsection{A 3D polycrystal with 2D grain boundaries}
-\label{sec:app:gb:3d}
-% ---------------------------------------------------------------
-
-% ---------------------------------------------------------------
-\subsection{Comparison with a homogenised effective diffusivity}
-\label{sec:app:gb:effective}
+\subsection{Results}
+\label{sec:app:gb:results}
 % ---------------------------------------------------------------
 
 % ===============================================================
 \section{Discussion}
 \label{sec:discussion}
 % ===============================================================
-
-% ---------------------------------------------------------------
-\subsection{When is a co-dimensional description appropriate?}
-\label{sec:discussion:when}
-% ---------------------------------------------------------------
-
-% ---------------------------------------------------------------
-\subsection{Computational cost against a resolved mesh}
-\label{sec:discussion:cost}
-% ---------------------------------------------------------------
 
 % ---------------------------------------------------------------
 \subsection{Limitations and future work}
