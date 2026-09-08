@@ -1,14 +1,312 @@
-\documentclass{article}
-\usepackage{graphicx} % Required for inserting images
+\documentclass[preprint,11pt]{elsarticle}
+\usepackage{newtxtext}  % <- needed for some fonts apparently
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{subcaption}
+% figures live next to the script that produces them, in scripts/
+\graphicspath{{scripts/}}
+\usepackage{xcolor}
+\usepackage{todonotes}
+\usepackage{overpic}
+\usepackage{wasysym}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{enumitem}
+\usepackage[colorlinks = true, linkcolor = blue, urlcolor  = blue, citecolor = blue]{hyperref}
+\usepackage{pythonhighlight}
 
-\title{Co-Dimensional modelling in FESTIM}
-\author{James Dark}
-\date{September 2026}
+% Compact nested lists for the outline
+\setlist[itemize]{noitemsep, topsep=3pt, parsep=2pt, leftmargin=1.4em}
+
+% ---------------------------------------------------------------
+% Macros
+%
+% Code names and generic symbols only. Add notation macros here as the
+% paper introduces the quantities, and record each in the terminology
+% registry in CLAUDE.md at the same time.
+%
+% Note if a concentration macro named \cm is ever reintroduced: siunitx
+% ships its own short \cm, so the two collide. The fix used previously
+% was to \let it aside before \usepackage{siunitx} and restore it with
+% \AtBeginDocument. Do not add \cm without that guard.
+% ---------------------------------------------------------------
+\newcommand{\FESTIM}{\textsc{festim}}
+\newcommand{\TMAP}{\textsc{tmap}}
+\newcommand{\MHIMS}{\textsc{mhims}}
+\newcommand{\kB}{k_\mathrm{B}}
+\newcommand{\half}{\tfrac{1}{2}}
+
+% ---------------------------------------------------------------
+% Units. Every number carrying a physical dimension goes through
+% siunitx: \qty{2.032}{\milli\metre} for a quantity, \unit{\metre\per
+% \second} for a bare unit, \num{1.31e5} for a bare number in
+% scientific notation. Do not hand-roll \times10^{} or \mathrm{} units.
+% Spell units out in full inside \qty and \unit (\centi\metre).
+% ---------------------------------------------------------------
+\usepackage{siunitx}
+\sisetup{
+    per-mode         = power,     % m s^{-1}, not m/s
+    exponent-product = \times,
+    range-units      = single,
+}
+% \qty{26}{\percent} sets a thin space before the sign, as the SI brochure
+% asks. For a tight "26%" instead, either add number-unit-product = {}
+% above (it then applies to every unit, not just percent) or write
+% \qty[number-unit-product={}]{26}{\percent}.
+
+% Draft annotation macros -- delete these (and their uses) before submission
+\newcommand{\TODO}[1]{\textcolor{BrickRed}{\textbf{[TODO]}~#1}}
+\newcommand{\VERIFY}[1]{\textcolor{RedOrange}{\textbf{[VERIFY]}~#1}}
+\newcommand{\KEY}[1]{\textcolor{RoyalBlue}{\textbf{[KEY POINT]}~#1}}
+
+% ---------------------------------------------------------------
+% TODO(journal): elsarticle is an Elsevier class, so an IOP journal such
+% as Nuclear Fusion is not a valid target for it. The natural Elsevier
+% targets are:
+%   - Fusion Engineering and Design      <- set below
+%   - International Journal of Hydrogen Energy (where FESTIM v2 landed)
+%   - Nuclear Materials and Energy
+%   - Computer Physics Communications (if the framing stays methodological)
+% ---------------------------------------------------------------
+\journal{Fusion Engineering and Design}
+% ---------------------------------------------------------------
 
 \begin{document}
 
-\maketitle
+\begin{frontmatter}
 
+% TODO(title): provisional, pick one once the framing is settled.
+\title{Co-Dimensional coupling with FESTIM}
+
+\author[mit]{Remi Delaporte-Mathurin}
+\author[mit]{James Dark}
+
+\address[mit]{Massachusetts Institute of Technology, Cambridge, MA, USA}
+
+\begin{abstract}
+\TODO{Abstract. Write last, once the argument in Sec.~\ref{sec:intro} is settled.}
+\end{abstract}
+
+\begin{keyword}
+    \TODO{keywords} \sep
+    \FESTIM{}
+\end{keyword}
+
+\end{frontmatter}
+
+% ===============================================================
 \section{Introduction}
+\label{sec:intro}
+% ===============================================================
+
+% ===============================================================
+\section{Motivation}
+\label{sec:motivation}
+% ===============================================================
+
+% ---------------------------------------------------------------
+\subsection{Thin and lower-dimensional features in hydrogen transport}
+\label{sec:motivation:features}
+% ---------------------------------------------------------------
+
+% ---------------------------------------------------------------
+\subsection{The cost of resolving them in the mesh}
+\label{sec:motivation:meshing}
+% ---------------------------------------------------------------
+
+% ---------------------------------------------------------------
+\subsection{Existing treatments and what they discard}
+\label{sec:motivation:existing}
+% ---------------------------------------------------------------
+
+% ---------------------------------------------------------------
+\subsection{What a co-dimensional description adds}
+\label{sec:motivation:codim}
+% ---------------------------------------------------------------
+
+% ===============================================================
+% TODO(structure): section title. Alternatives considered:
+%   "Methodology", "Co-dimensional formulation and its implementation".
+\section{Co-dimensional modelling in \FESTIM{}}
+\label{sec:method}
+% ===============================================================
+
+% ---------------------------------------------------------------
+\subsection{Governing equations on a manifold}
+\label{sec:method:governing}
+% ---------------------------------------------------------------
+
+% ---------------------------------------------------------------
+\subsection{Coupling to the bulk}
+\label{sec:method:coupling}
+% ---------------------------------------------------------------
+
+% ---------------------------------------------------------------
+\subsection{Choice of manifold variable and its units}
+\label{sec:method:units}
+% ---------------------------------------------------------------
+
+% ---------------------------------------------------------------
+\subsection{Weak formulation and mixed-dimensional assembly}
+\label{sec:method:weak}
+% ---------------------------------------------------------------
+
+% ---------------------------------------------------------------
+\subsection{Manifold networks, junctions and multiple adjacent volumes}
+\label{sec:method:networks}
+% ---------------------------------------------------------------
+
+% ---------------------------------------------------------------
+\subsection{Boundary conditions, sources, reactions, advection and drift}
+\label{sec:method:terms}
+% ---------------------------------------------------------------
+
+% ---------------------------------------------------------------
+\subsection{Derived quantities and exports on a manifold}
+\label{sec:method:exports}
+% ---------------------------------------------------------------
+
+% ---------------------------------------------------------------
+\subsection{\FESTIM{} user API}
+\label{sec:method:api}
+% ---------------------------------------------------------------
+
+% ---------------------------------------------------------------
+\subsection{Verification}
+\label{sec:method:verification}
+% ---------------------------------------------------------------
+
+% ===============================================================
+\section{Application 1: coupling a 1D flow model to a 2D/3D component}
+\label{sec:app:pfr}
+% ===============================================================
+
+% ---------------------------------------------------------------
+\subsection{A plug-flow model of the coolant as a manifold}
+\label{sec:app:pfr:model}
+% ---------------------------------------------------------------
+
+% ---------------------------------------------------------------
+\subsection{Setup: permeation through a pipe wall into the flow}
+\label{sec:app:pfr:setup}
+% ---------------------------------------------------------------
+
+% ---------------------------------------------------------------
+\subsection{Verification against a resolved model}
+\label{sec:app:pfr:verification}
+% ---------------------------------------------------------------
+
+% ---------------------------------------------------------------
+\subsection{Results}
+\label{sec:app:pfr:results}
+% ---------------------------------------------------------------
+
+% ===============================================================
+\section{Application 2: interfaces carrying their own inventory}
+\label{sec:app:interface}
+% ===============================================================
+
+% ---------------------------------------------------------------
+\subsection{Interfacial trapping and the limits of an algebraic interface condition}
+\label{sec:app:interface:why}
+% ---------------------------------------------------------------
+
+% ---------------------------------------------------------------
+\subsection{Setup: an interface concentration with exchange kinetics on both sides}
+\label{sec:app:interface:setup}
+% ---------------------------------------------------------------
+
+% ---------------------------------------------------------------
+\subsection{W/Cu}
+\label{sec:app:interface:wcu}
+% ---------------------------------------------------------------
+
+% ---------------------------------------------------------------
+\subsection{Be/BeO}
+\label{sec:app:interface:bebeo}
+% ---------------------------------------------------------------
+
+% ---------------------------------------------------------------
+\subsection{Comparison with local thermodynamic equilibrium}
+\label{sec:app:interface:lte}
+% ---------------------------------------------------------------
+
+% ===============================================================
+\section{Application 3: grain-boundary transport in a polycrystal}
+\label{sec:app:gb}
+% ===============================================================
+
+% ---------------------------------------------------------------
+\subsection{Grain boundaries as a manifold network}
+\label{sec:app:gb:model}
+% ---------------------------------------------------------------
+
+% ---------------------------------------------------------------
+\subsection{Generating the polycrystal: Voronoi tessellations}
+\label{sec:app:gb:voronoi}
+% ---------------------------------------------------------------
+
+% ---------------------------------------------------------------
+\subsection{A 2D polycrystal with 1D grain boundaries}
+\label{sec:app:gb:2d}
+% ---------------------------------------------------------------
+
+% ---------------------------------------------------------------
+\subsection{A 3D polycrystal with 2D grain boundaries}
+\label{sec:app:gb:3d}
+% ---------------------------------------------------------------
+
+% ---------------------------------------------------------------
+\subsection{Comparison with a homogenised effective diffusivity}
+\label{sec:app:gb:effective}
+% ---------------------------------------------------------------
+
+% ===============================================================
+\section{Discussion}
+\label{sec:discussion}
+% ===============================================================
+
+% ---------------------------------------------------------------
+\subsection{When is a co-dimensional description appropriate?}
+\label{sec:discussion:when}
+% ---------------------------------------------------------------
+
+% ---------------------------------------------------------------
+\subsection{Computational cost against a resolved mesh}
+\label{sec:discussion:cost}
+% ---------------------------------------------------------------
+
+% ---------------------------------------------------------------
+\subsection{Limitations and future work}
+\label{sec:discussion:limitations}
+% ---------------------------------------------------------------
+
+% ===============================================================
+\section{Conclusions}
+\label{sec:conclusions}
+% ===============================================================
+
+% ===============================================================
+% \section*{Acknowledgements}
+% ===============================================================
+
+% ===============================================================
+\section{Data availability}
+\label{sec:data}
+% ===============================================================
+
+% ===============================================================
+\appendix
+% ===============================================================
+
+% ---------------------------------------------------------------
+\section{\TODO{Appendix title}}
+\label{app:a}
+% ---------------------------------------------------------------
+
+% ===============================================================
+\bibliographystyle{elsarticle-num}
+\bibliography{references}
+% ===============================================================
 
 \end{document}
