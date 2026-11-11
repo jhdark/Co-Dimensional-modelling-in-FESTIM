@@ -615,14 +615,20 @@ The application to measured microstructures will be investigated in a future stu
 \label{sec:conclusions}
 % ===============================================================
 
-\begin{itemize}
-    \item A co-dimensional description is available in \FESTIM{} 2.2: a manifold carries its own transport equation and is solved monolithically with the bulk.
-    \item It converges at second order and reproduces an analytical permeator solution, molecular dynamics at Be/BeO and a rate-equation model at W/Cu.
-    \item An interface with its own inventory delays breakthrough through thin, cold layers by orders of magnitude, and leaves the steady flux unchanged.
-    \item A grain-boundary network is described as one manifold with one field, with no junction condition.
-    \item \TODO{Write last.
-        Nothing that Secs.~\ref{sec:app:pfr} to~\ref{sec:app:gb} do not support.}
-\end{itemize}
+This work presents a co-dimensional description of thin features in the hydrogen transport code \FESTIM{}.
+A manifold of one dimension less than the mesh carries its own transport equation, exchanges a flux with the bulk, and is solved monolithically with it.
+The implementation converges at second order against a manufactured solution, in 2D and on a tilted manifold in 3D.
+
+Three applications were presented.
+A permeator tube with the liquid carried on a manifold reproduced published extraction efficiencies of \num{0.690} and \num{0.415}, within \num{2e-5} of the analytical solution along the tube.
+An interface described as a manifold reproduced molecular dynamics results at Be/BeO, and a fourteen-site rate-equation model at W/Cu within \qtyrange{3}{19}{\percent}.
+In a W/Cu bilayer, the interfacial inventory left the steady flux unchanged within \qty{1.4}{\percent}.
+However, it delayed breakthrough by a factor of \num{3.5e4} for \qty{6}{\micro\metre} of tungsten at \qty{340}{\kelvin}.
+Finally, the grain-boundary network of a Voronoi polycrystal was described as a single manifold, which carried 31 times the flux of the grains.
+
+The interface and grain-boundary cases are demonstrations on published or assumed parameters, and are not validations against permeation data.
+The exchange rates remain the main uncertainty of such models.
+Nevertheless, a co-dimensional description allows rates obtained at the atomic scale to be used in component-scale simulations without resolving the feature in the mesh.
 
 % ===============================================================
 % \section*{Acknowledgements}
