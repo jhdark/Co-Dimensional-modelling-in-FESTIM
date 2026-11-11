@@ -198,14 +198,26 @@
 % ---------------------------------------------------------------
 
 \begin{itemize}
-    \item The residual cannot be written as a single form. The manifold gradient is only defined on a measure whose domain is the submesh, while the terms coupling the manifold field to the bulk field must be integrated on the parent mesh, because a bulk function cannot be resolved inside a codim-1 integral.
-    \item \textsc{dolfinx}~\cite{baratta_dolfinx_2023} compiles one integration domain per form, so the residual is split into groups, one blocked form list per integration domain.
-    \item The groups are accumulated into the same vector and matrix through custom nonlinear-solver callbacks, so the system stays monolithic: one nonlinear solve, one Jacobian, no operator splitting and no sub-iteration between the manifold and the bulk.
-    \item An interior manifold is integrated over interior facets, where each term must be restricted to one side. Consequently a single exchange term may not read the bulk concentrations of both sides at once; one exchange is declared per adjacent subdomain.
-    \item Beyond two adjacent subdomains the two-sided restriction has no meaning, since past a triple junction the network runs between a different pair of grains. Each adjacent subdomain therefore gets its own integral on which it is the positive side, and a facet shared by two grains is integrated once per grain.
-    \item The manifold is tagged in the facet meshtags rather than the cell meshtags, so its identifier shares a namespace with the surface subdomains.
-    \item \TODO{Decide how much of this belongs in the main text and how much in an appendix. The restriction argument is load-bearing for Application 3 and should stay.}
-    \item \TODO{cite scifem, used for the interface data}
+    \item One function space per subdomain, each on its own submesh: cells for $\Omega_i$, facets for $\Gamma$. First-order Lagrange elements throughout.
+    \item Weak form, with test functions $v_i$ and $w$, and no drift on the outer boundary:
+\end{itemize}
+\begin{equation}
+    \int_{\Omega_i} \frac{\partial c_i}{\partial t} v_i + D_i \nabla c_i \cdot \nabla v_i - S_i v_i \,\mathrm{d}x + \int_\Gamma J_i\, v_i \,\mathrm{d}s = 0
+    \label{eq:weak:bulk}
+\end{equation}
+\begin{equation}
+    \int_\Gamma \frac{\partial c_\Gamma}{\partial t} w + \left( D_\Gamma \gradG c_\Gamma - \mathbf{u}\, c_\Gamma \right) \cdot \gradG w - S_\Gamma w \,\mathrm{d}s - \alpha \sum_i \int_\Gamma J_i\, w \,\mathrm{d}s = 0
+    \label{eq:weak:manifold}
+\end{equation}
+\begin{itemize}
+    \item The drift term is in divergence form. A manifold end with no condition therefore carries zero total flux, and an outlet needs an explicit outflow condition.
+    \item The two kinds of integral in Eq.~\ref{eq:weak:manifold} need different integration domains: the tangential terms are integrated on the submesh of $\Gamma$, the exchange terms on the facets of the parent mesh, where the bulk fields can be evaluated.
+    \item \textsc{dolfinx}~\cite{baratta_dolfinx_2023} compiles one integration domain per form, so the residual is split into groups that are accumulated into one vector and one matrix.
+    \item The system stays monolithic: one Newton solve and one Jacobian per time step, with no sub-iteration between the manifold and the bulk.
+    \item Inside the mesh, $\Gamma$ is integrated over interior facets and each exchange term is restricted to one side. One exchange is declared per adjacent subdomain.
+    \item Beyond two adjacent subdomains there is no consistent pair of sides, since past a triple junction the manifold separates a different pair. Each adjacent subdomain is then given its own integral, on which it is the restricted side.
+    \item Time integration is backward Euler, as in the rest of \FESTIM{}.
+    \item \TODO{cite scifem, used for the interface data; acknowledge the assembly callbacks adapted from J. S. Dokken}
 \end{itemize}
 
 % ---------------------------------------------------------------
