@@ -123,14 +123,14 @@
 % ===============================================================
 
 \begin{itemize}
-    \item The thin-feature problem, quantified: a grain boundary is nanometres wide inside a millimetre-scale component, an oxide layer micrometres. \TODO{numbers and citations for representative widths}
-    \item Resolving such a feature with cells costs elements, aspect ratio and conditioning, and the cost is paid everywhere the feature runs, not only where it matters.
-    \item \textbf{Treatment 1: homogenisation.} Fold the feature into an effective diffusivity or solubility. Loses the feature's own field, so it cannot report the inventory held in the feature or the flux carried along it, and it assumes the two phases stay locally equilibrated. \TODO{cite: Hart-type effective diffusivity, short-circuit diffusion}
-    \item \textbf{Treatment 2: an algebraic interface condition.} Continuity of chemical potential imposed on the traces. Assumes instantaneous equilibration and no stored inventory, which molecular dynamics at Be/BeO~\cite{hodille_molecular_2022} and rate-equation modelling at W/Cu~\cite{silva-solis_hydrogen_2026} both contradict.
-    \item \textbf{Treatment 3: external coupling.} Hand the feature to a separate 0D or 1D system model and couple by exchanged boundary data~\cite{meschini_modeling_2023}. Separate solver, separate time step, and the coupling is explicit. \TODO{cite a system code, e.g. PathSim}
-    \item \KEY{A co-dimensional subdomain keeps what all three discard: its own field, its own transport terms, its own boundary conditions and exports, assembled monolithically with the bulk into a single nonlinear solve.}
-    \item The mathematics is not new. Mixed-dimensional coupling is established for flow in fractured porous media and for 1D--3D vascular problems. \TODO{cite: D'Angelo \& Quarteroni; Boon, Nordbotten \& Yotov; Laurino \& Zunino; Kuchta et al.}
-    \item What is new is its availability in a macroscopic hydrogen transport code, alongside trapping, multi-species reactions and the rest of the physics such a code already carries. \VERIFY{that no other H-transport code offers this}
+    \item Scale separation: a grain boundary or an interfacial plane is of atomic width, inside components of millimetre scale. \TODO{representative widths with citations}
+    \item A mesh that resolves such a feature pays for it along its whole extent, in cell count, aspect ratio and conditioning.
+    \item \textbf{Homogenisation.} The feature is folded into an effective diffusivity. Its own concentration is lost, and so are the inventory it holds and the flux it carries. \TODO{cite Hart, Fisher}
+    \item \textbf{Algebraic interface condition.} Continuity of chemical potential is imposed on the two bulk concentrations. The interface has no inventory and no time scale, which molecular dynamics at Be/BeO~\cite{hodille_molecular_2022} and rate-equation modelling at W/Cu~\cite{silva-solis_hydrogen_2026} both contradict.
+    \item \textbf{External coupling.} A flowing fluid is handed to a separate system code and coupled through boundary data~\cite{meschini_modeling_2023}. The coupling is explicit and the time steps are not shared.
+    \item \KEY{A manifold keeps what these discard: its own field, transport terms, boundary conditions and exports, solved together with the bulk in one nonlinear system.}
+    \item Mixed-dimensional coupling is established in other fields, for instance flow in fractured porous media. \TODO{cite: D'Angelo and Quarteroni; Boon, Nordbotten and Yotov; Kuchta et al.}
+    \item What is new here is its availability in a hydrogen transport code, alongside trapping and multi-species reactions. \VERIFY{that no other H-transport code offers this}
 \end{itemize}
 
 % TODO(structure): section title. Alternatives: "Methodology",
