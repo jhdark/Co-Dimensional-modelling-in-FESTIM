@@ -106,14 +106,15 @@
 \begin{itemize}
     \item Hydrogen isotope transport sets fuel retention, permeation losses and tritium accountancy in fusion systems~\cite{meschini_impact_2025, meschini_modeling_2023}.
     \item Macroscopic codes (\FESTIM{}~\cite{dark_festim_2026}, \TMAP{}8~\cite{simon_moose-based_2025}, \textsc{tessim-x}~\cite{schmid_implications_2024}, \MHIMS{}~\cite{hodille_macroscopic_2015}) solve bulk diffusion and trapping on a meshed domain.
-    \item Real components contain features far thinner than the component itself: grain boundaries, oxide layers, cracks, coolant channels, and the interfaces between materials.
-    \item These features often set the answer, and they resist meshing: resolving them drives the cell count and the aspect ratio of the mesh.
-    \item The usual responses each discard something. Homogenise the feature into an effective bulk property and it loses its own state; reduce it to an algebraic condition on the bulk traces and it loses its own transport and its inventory; couple it externally to a system code and the coupling is no longer monolithic.
-    \item \KEY{Contribution: a co-dimensional description, in which the feature is a subdomain of one dimension less than the mesh, carrying its own transport equation and coupled to the bulk by a flux.}
-    \item Implemented in \FESTIM{}~\cite{dark_festim_2026}, open source, released in v2.2. \VERIFY{release version and date at submission}
-    \item Three applications: a 1D plug-flow model of a coolant channel coupled to a 2D/3D pipe wall; interfaces carrying their own inventory (W/Cu, Be/BeO); grain-boundary networks in Voronoi polycrystals.
-    \item Relation to the companion paper: there an interface is a reactive surface with no stored inventory; here it is a subdomain with its own state. \TODO{cite the companion once it has a number}
-    \item \TODO{Say plainly what the paper claims beyond capability. Candidate: the co-dimensional description is the right default for a thin feature that carries its own state, and the cases where an algebraic condition or a homogenised property suffice are narrower than current practice assumes.}
+    \item Components contain features far thinner than themselves: grain boundaries, material interfaces, cracks, coolant channels.
+    \item These features often control the transport, and resolving them in the mesh drives the cell count and the aspect ratio.
+    \item However, the usual treatments each discard something: a homogenised property loses the state of the feature, an algebraic interface condition loses its inventory and its kinetics, and an external system code loses the monolithic coupling.
+    \item \KEY{Contribution: a co-dimensional description in \FESTIM{}. The feature is a subdomain of one dimension less than the mesh, called a manifold, which carries its own transport equation and exchanges a flux with the bulk.}
+    \item Released in \FESTIM{} 2.2, open source, and covered by the continuous integration suite. \VERIFY{release version and date at submission}
+    \item Verification: second-order convergence against a manufactured solution, in 2D and on a tilted manifold in 3D.
+    \item Three applications, each against a reference: a permeator tube with the flowing liquid on a manifold, against an analytical solution; interfaces carrying their own inventory, against molecular dynamics at Be/BeO~\cite{hodille_molecular_2022} and a rate-equation model at W/Cu~\cite{silva-solis_hydrogen_2026}; a grain-boundary network in a Voronoi polycrystal.
+    \item Relation to the companion paper: there an interface is a reactive surface with no stored inventory, here it has its own state. \TODO{cite the companion once it has a number}
+    \item All scripts and data are available in a public repository. \TODO{URL and DOI}
 \end{itemize}
 
 % ===============================================================
