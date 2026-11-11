@@ -273,16 +273,39 @@
 % ---------------------------------------------------------------
 
 \begin{itemize}
-    \item Question the application answers: how much tritium leaves a component with the coolant, without meshing the coolant as a fluid domain.
-    \item Motivating systems: fluoride-salt loops and blanket coolant circuits~\cite{forsberg_fusion_2020, fuerst_molten_2025, yang_quantifying_2026}.
-    \item Geometry: a pipe wall with the channel as a manifold running along its surface. \TODO{2D first, then 3D? Decide whether both are shown}
-    \item The manifold carries a plug-flow model: advection along the channel, exchange with the wall, and an axial dispersion term. \TODO{equation}
-    \item The plug-flow reduction assumes a well-mixed cross-section and negligible axial dispersion relative to advection, so the manifold field is a cross-section-averaged concentration.
-    \item Wall-to-coolant exchange through a mass-transfer coefficient. \TODO{cite a Sherwood correlation, and say whether it is taken as constant or evaluated along the channel}
-    \item Conditions: loaded inner wall, clean inlet, outflow at the outlet.
-    \item Exports: the permeation flux from the wall into the channel, and the pickup carried out at the outlet; these balance at steady state.
-    \item Numerical caveat to report: the cell P\'eclet number along the channel is set by the parent mesh, so the wall may need far more cells along its length than through its thickness.
-    \item \TODO{Parameters. Nothing here is fabricated: take the geometry and transport properties from a named source or from the user, and pin them in a parameters script.}
+    \item Case: a permeator tube. Tritium dissolved in a flowing liquid permeates through the tube wall into vacuum.
+    \item The wall is an axisymmetric bulk subdomain. The liquid is not meshed: it is a manifold on the inner surface, at radius $r_\mathrm{i}$, carrying the cross-section averaged concentration $c_\mathrm{f}$.
+    \item Plug-flow balance, Eq.~\ref{eq:manifold} with $\alpha = 2/r_\mathrm{i}$ and a flux leaving the liquid:
+\end{itemize}
+\begin{equation}
+    \frac{\partial c_\mathrm{f}}{\partial t} + u \frac{\partial c_\mathrm{f}}{\partial z} = D_\mathrm{l} \frac{\partial^2 c_\mathrm{f}}{\partial z^2} - \frac{2}{r_\mathrm{i}} J
+    \label{eq:pfr}
+\end{equation}
+\begin{equation}
+    J = k_\mathrm{T} \left( c_\mathrm{f} - c_\mathrm{w,l} \right)
+    \label{eq:pfr:J}
+\end{equation}
+\begin{itemize}
+    \item $u$ is the mean velocity, $D_\mathrm{l}$ the diffusivity in the liquid, $k_\mathrm{T}$ the mass transfer coefficient and $c_\mathrm{w,l}$ the liquid concentration at the wall.
+    \item The liquid at the wall is in equilibrium with the metal surface, at concentration $c_\mathrm{w}$:
+\end{itemize}
+\begin{equation}
+    c_\mathrm{w,l} = \frac{K_\mathrm{l}}{K_\mathrm{s}}\, c_\mathrm{w} \quad \text{(Sieverts liquid)}, \qquad c_\mathrm{w,l} = K_\mathrm{H} \left( \frac{c_\mathrm{w}}{K_\mathrm{s}} \right)^2 \quad \text{(Henry liquid)}
+    \label{eq:pfr:eq}
+\end{equation}
+\begin{itemize}
+    \item $K_\mathrm{s}$ and $K_\mathrm{l}$ are Sieverts solubilities of the wall and the liquid, and $K_\mathrm{H}$ a Henry solubility. The second law is nonlinear in the wall concentration.
+    \item Conditions: fixed concentration $c_\mathrm{in}$ at the inlet, outflow at the outlet, zero concentration on the outer surface of the wall.
+    \item Two published cases: Pb-17Li in a RAFM steel tube and FLiBe in a nickel tube. \TODO{cite Rader et al. 2018 and Humrickhouse and Merrill 2015; parameter table}
+    \item Reference: for a Sieverts liquid the steady extraction efficiency $\eta = 1 - c_\mathrm{f}(L)/c_\mathrm{in}$ of a tube of length $L$ and inner diameter $d$ is
+\end{itemize}
+\begin{equation}
+    \eta = 1 - \exp \left( -\tau \frac{\zeta}{1 + \zeta} \right), \qquad \tau = \frac{4 k_\mathrm{T} L}{u\, d}, \qquad \zeta = \frac{2 D_\mathrm{s} K_\mathrm{s}}{k_\mathrm{T} K_\mathrm{l}\, d \ln \left( d_\mathrm{o}/d \right)}
+    \label{eq:pfr:eta}
+\end{equation}
+\begin{itemize}
+    \item $D_\mathrm{s}$ is the diffusivity in the wall and $d_\mathrm{o}$ the outer diameter. The Henry case has an analytical solution in terms of the Lambert $W$ function. \TODO{cite}
+    \item \VERIFY{solubility units and the FLiBe inlet concentration are inferred from the published regime number}
 \end{itemize}
 
 % ---------------------------------------------------------------
