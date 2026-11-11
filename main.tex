@@ -374,11 +374,16 @@
 % ---------------------------------------------------------------
 
 \begin{itemize}
-    \item W/Cu: transient filling of the interface, the delay it introduces in breakthrough, and the steady flux against the algebraic condition.
-    \item Be/BeO: the same readouts, at temperatures where the molecular dynamics says equilibrium is not reached.
-    \item The interfacial inventory itself, which an algebraic condition cannot represent at all, and which is the clearest reason to prefer the co-dimensional description.
-    \item \TODO{Is the comparison against the published rate-equation results of~\cite{silva-solis_hydrogen_2026}, or only against an algebraic-condition baseline run in \FESTIM{}? The former is much stronger and should be attempted.}
-    \item Honest caveat, kept and not softened: these are demonstrations on published parameters, not validations against permeation data.
+    \item \textbf{Be/BeO.} The interface concentration follows the molecular dynamics at both interfaces and all three temperatures (see Fig.~\ref{fig:bebeo}). \TODO{quantify the error}
+    \item This case is a single rate equation. Its value is that the rates fitted to molecular dynamics enter a component-scale model unchanged.
+    \item \textbf{W/Cu, multi-site.} Steady concentrations agree with the reference within \qtyrange{3}{19}{\percent} over ten orders of magnitude (see Fig.~\ref{fig:wcunetwork}a). \VERIFY{origin of the offset, probably rounding of the tabulated barriers}
+    \item The time to steady state is \qty{2969}{\second} at \qty{340}{\kelvin}, \qty{1.20}{\second} at \qty{430}{\kelvin} and \qty{1.77e-3}{\second} at \qty{550}{\kelvin}, against \qtylist{2630;1.06;1.55e-3}{\second} in the reference (see Fig.~\ref{fig:wcunetwork}b).
+    \item \KEY{The reference holds the tungsten concentration fixed. With the diffusivity of tungsten, \qty{1}{\micro\metre} of tungsten cannot supply the interface at that rate, and filling takes about \qty{e7}{\second} at \qty{340}{\kelvin}. Coupling the interface to the bulk changes the answer by four orders of magnitude.}
+    \item \textbf{W/Cu, bilayer.} The steady permeation flux is that of the equilibrium condition within \qty{1.4}{\percent}, as Eq.~\ref{eq:interface:lte} requires. The difference is site blocking, largest where the coverage is highest.
+    \item The transient differs when the layers are thin and cold. At \qty{340}{\kelvin}, breakthrough is delayed by \qty{5}{\percent} for \qty{6}{\milli\metre} of tungsten and by a factor of \num{3.5e4} for \qty{6}{\micro\metre} (see Fig.~\ref{fig:interface}).
+    \item In the thin layer the interface holds \qty{8e18}{\per\metre\squared}, against \qty{4e14}{\per\metre\squared} in the two bulk layers, and its coverage reaches \num{0.57}. An algebraic condition represents neither.
+    \item At \qty{550}{\kelvin} the delay stays below a factor of two at every thickness considered. The equilibrium condition is adequate for a monoblock, and inadequate for a thin coating at low temperature.
+    \item It should be noted that these are demonstrations on published parameters, not validations against permeation data.
 \end{itemize}
 
 \begin{figure*}
