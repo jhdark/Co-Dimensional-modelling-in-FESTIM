@@ -439,11 +439,9 @@ In this model, the liquid adds only one degree of freedom per facet of the inner
 \label{sec:app:interface:setup}
 % ---------------------------------------------------------------
 
-\begin{itemize}
-    \item The companion paper treats an interface as a reactive surface with no stored inventory.
-        Here the interfacial plane is a manifold between two materials, with $\alpha = 1$: $c_\Gamma$ is an areal density on $n_\Gamma$ sites, with coverage $\theta = c_\Gamma / n_\Gamma$.
-    \item Exchange with material $i$, a trapping jump from the bulk and a detrapping jump back:
-\end{itemize}
+In the second application, the plane between two materials is a manifold with $\alpha = 1$.
+Its concentration $c_\Gamma$ is an areal density on $n_\Gamma$ sites per unit area, with coverage $\theta = c_\Gamma / n_\Gamma$.
+The exchange with material $i$ consists of a trapping jump from the bulk and a detrapping jump back:
 \begin{equation}
     J_i = \nu_{i \rightarrow \Gamma}\, \lambda_i\, c_i \left( 1 - \theta \right) - \nu_{\Gamma \rightarrow i}\, c_\Gamma
     \label{eq:interface:J}
@@ -452,76 +450,80 @@ In this model, the liquid adds only one degree of freedom per facet of the inner
     \frac{\partial c_\Gamma}{\partial t} = J_1 + J_2
     \label{eq:interface:balance}
 \end{equation}
-\begin{itemize}
-    \item $\nu$ are jump frequencies of Arrhenius form and $\lambda_i$ is the jump distance in material $i$, so that $\lambda_i c_i$ is the areal density of bulk atoms within reach of the interface.
-    \item Equilibrium limit: at steady state with $\theta \ll 1$, Eqs.~\ref{eq:interface:J} and~\ref{eq:interface:balance} with no net flux give
-\end{itemize}
+where $\nu$ are jump frequencies following an Arrhenius law and $\lambda_i$ is the jump distance in material $i$.
+The product $\lambda_i c_i$ is the areal density of bulk atoms within reach of the interface.
+At steady state with no net flux and $\theta \ll 1$, Eqs.~\ref{eq:interface:J} and~\ref{eq:interface:balance} give:
 \begin{equation}
     \frac{c_2}{c_1} = \frac{\nu_{1 \rightarrow \Gamma}\, \lambda_1\, \nu_{\Gamma \rightarrow 2}}{\nu_{\Gamma \rightarrow 1}\, \nu_{2 \rightarrow \Gamma}\, \lambda_2}
     \label{eq:interface:lte}
 \end{equation}
-\begin{itemize}
-    \item Equation~\ref{eq:interface:lte} is the algebraic condition the manifold reduces to.
-        It keeps neither the inventory $c_\Gamma$ nor the time needed to fill it.
-    \item \textbf{Be/BeO.} Molecular dynamics of deuterium at two interfaces, Be/BeO(0001) and Be/BeO(000$\bar{1}$), at \qtylist{750;1000;1250}{\kelvin}~\cite{hodille_molecular_2022}.
-        No exchange is observed on the BeO side, so $J_2 = 0$.
-        Rates, $n_\Gamma = \qty{e20}{\per\metre\squared}$ and $c_\mathrm{Be} = \qty{5e27}{\per\metre\cubed}$ are those of the reference.
-    \item \textbf{W/Cu, multi-site.} The rate-equation model of Silva-Sol\'is~\cite{silva-solis_hydrogen_2026}: fourteen sites across the interface joined by three diffusion paths, with barriers from density functional theory.
-        \VERIFY{cite the thesis or the paper for the tables used}
-    \item Here the fourteen sites are fourteen species on one manifold, and each jump between two sites is a pair of opposite sources.
-        The W-side concentration is held fixed, as in the reference.
-    \item \textbf{W/Cu, bilayer.} The path is reduced to Eq.~\ref{eq:interface:J}, and the manifold is placed between a tungsten and a copper layer in 1D, against Eq.~\ref{eq:interface:lte} imposed as an interface condition.
-        \VERIFY{the reduction is ours; refit its attempt frequency to the multi-site model}
-    \item \TODO{parameter table: rates, site densities, diffusivities, with sources}
-\end{itemize}
+Equation~\ref{eq:interface:lte} is the algebraic equilibrium condition to which the manifold reduces.
+It retains neither the inventory $c_\Gamma$ nor the time required to fill it.
+
+Three cases are considered.
+The first is the Be/BeO interface, for which Hodille et al. simulated deuterium trapping by molecular dynamics at \qtylist{750;1000;1250}{\kelvin}~\cite{hodille_molecular_2022}.
+No exchange was observed on the BeO side, so $J_2 = 0$.
+The jump frequencies, $n_\Gamma = \qty{e20}{\per\metre\squared}$ and a beryllium concentration of \qty{5e27}{\per\metre\cubed} are taken from that reference.
+
+The second case is the multi-site model of the W/Cu interface of Silva-Sol\'is et al.~\cite{silva-solis_hydrogen_2026}. \VERIFY{cite the thesis for the tables used}
+It contains fourteen sites across the interface, joined by three diffusion paths, with barriers obtained from density functional theory.
+Here, the fourteen sites are fourteen species on one manifold, and each jump between two sites is a pair of opposite sources.
+The concentration on the tungsten side is held at \qty{2.3e7}{\per\metre\cubed}, as in the reference.
+
+The third case places the interface between a tungsten layer and a copper layer in 1D.
+The multi-site path is reduced to Eq.~\ref{eq:interface:J}, and the result is compared with Eq.~\ref{eq:interface:lte} imposed as an interface condition. \VERIFY{the reduction is ours; refit its attempt frequency to the multi-site model}
+The copper layer is one sixth of the tungsten thickness $L_\mathrm{W}$.
+A concentration of \qty{e20}{\per\metre\cubed} is held on the tungsten surface and zero on the copper surface.
+It should be noted that nothing in these cases is fitted, and that the third is not compared with a measurement.
 
 % ---------------------------------------------------------------
 \subsection{Results}
 \label{sec:app:interface:results}
 % ---------------------------------------------------------------
 
-\begin{itemize}
-    \item \textbf{Be/BeO.} The interface concentration follows the molecular dynamics at both interfaces and all three temperatures (see Fig.~\ref{fig:bebeo}).
-        \TODO{quantify the error}
-    \item This case is a single rate equation.
-        Its value is that the rates fitted to molecular dynamics enter a component-scale model unchanged.
-    \item \textbf{W/Cu, multi-site.} Steady concentrations agree with the reference within \qtyrange{3}{19}{\percent} over ten orders of magnitude (see Fig.~\ref{fig:wcunetwork}a).
-        \VERIFY{origin of the offset, probably rounding of the tabulated barriers}
-    \item The time to steady state is \qty{2969}{\second} at \qty{340}{\kelvin}, \qty{1.20}{\second} at \qty{430}{\kelvin} and \qty{1.77e-3}{\second} at \qty{550}{\kelvin}, against \qtylist{2630;1.06;1.55e-3}{\second} in the reference (see Fig.~\ref{fig:wcunetwork}b).
-    \item \KEY{The reference holds the tungsten concentration fixed.
-        With the diffusivity of tungsten, \qty{1}{\micro\metre} of tungsten cannot supply the interface at that rate, and filling takes about \qty{e7}{\second} at \qty{340}{\kelvin}.
-        Coupling the interface to the bulk changes the answer by more than three orders of magnitude.}
-    \item \textbf{W/Cu, bilayer.} The steady permeation flux is that of the equilibrium condition within \qty{1.4}{\percent}, as Eq.~\ref{eq:interface:lte} requires.
-        The difference is site blocking, largest where the coverage is highest.
-    \item The transient differs when the layers are thin and cold.
-        At \qty{340}{\kelvin}, breakthrough is delayed by \qty{5}{\percent} for \qty{6}{\milli\metre} of tungsten and by a factor of \num{3.5e4} for \qty{6}{\micro\metre} (see Fig.~\ref{fig:interface}).
-    \item In the thin layer the interface holds \qty{8e18}{\per\metre\squared}, against \qty{4e14}{\per\metre\squared} in the two bulk layers, and its coverage reaches \num{0.57}.
-        An algebraic condition represents neither.
-    \item At \qty{550}{\kelvin} the delay stays below a factor of two at every thickness considered.
-        The equilibrium condition is adequate for a monoblock, and inadequate for a thin coating at low temperature.
-    \item It should be noted that these are demonstrations on published parameters, not validations against permeation data.
-\end{itemize}
+For Be/BeO, the interface concentration follows the molecular dynamics results at both interfaces and at all three temperatures (see Fig.~\ref{fig:bebeo}). \TODO{quantify the error}
+This case is a single rate equation.
+Its value lies in the fact that rates fitted to molecular dynamics enter a component-scale model unchanged.
 
 \begin{figure*}
     \centering
     \includegraphics[width=\textwidth]{be_beo}
-    \caption{Filling of two Be/BeO interfaces described as a manifold, against the molecular dynamics of Hodille et al. \TODO{draft figure; cite Hodille 2022 and state where the rate parameters come from}}
+    \caption{Temporal evolution of the deuterium concentration at the Be/BeO(0001) (a) and Be/BeO(000$\bar{1}$) (b) interfaces described as a manifold, compared with molecular dynamics results~\cite{hodille_molecular_2022}.}
     \label{fig:bebeo}
 \end{figure*}
+
+For the multi-site W/Cu model, the steady concentrations agree with the reference within \qtyrange{3}{19}{\percent}, over ten orders of magnitude (see Fig.~\ref{fig:wcunetwork}a). \VERIFY{origin of the offset, probably rounding of the tabulated barriers}
+The time to reach steady state is \qty{2969}{\second} at \qty{340}{\kelvin}, \qty{1.20}{\second} at \qty{430}{\kelvin} and \qty{1.77e-3}{\second} at \qty{550}{\kelvin}.
+The reference reports \qtylist{2630;1.06;1.55e-3}{\second}, respectively (see Fig.~\ref{fig:wcunetwork}b).
 
 \begin{figure*}
     \centering
     \includegraphics[width=\textwidth]{w_cu_network}
-    \caption{Multi-site kinetic model of the W/Cu interface of Silva-Sol\'is carried as fourteen species on one manifold. (a) Temporal evolution of four sites at \qty{340}{\kelvin} against the reported steady values. (b) Characteristic frequency against temperature. \TODO{draft figure}}
+    \caption{Multi-site model of the W/Cu interface carried as fourteen species on one manifold: temporal evolution of four sites at \qty{340}{\kelvin} (a) and characteristic frequency as a function of temperature (b), compared with the reference~\cite{silva-solis_hydrogen_2026}. The dashed line in (a) is fed through \qty{1}{\micro\metre} of tungsten.}
     \label{fig:wcunetwork}
 \end{figure*}
+
+The reference model holds the tungsten concentration fixed.
+However, with the diffusivity of tungsten, a layer of \qty{1}{\micro\metre} cannot supply the interface at the rate this requires.
+When the same interface is fed through such a layer, filling takes approximately \qty{e7}{\second} at \qty{340}{\kelvin}, more than three orders of magnitude longer.
+This is due to the supply from the bulk, which the manifold accounts for and a model of the interface alone does not.
+
+For the bilayer, the steady permeation flux is that of the equilibrium condition within \qty{1.4}{\percent}, as Eq.~\ref{eq:interface:lte} requires.
+The difference is attributed to site blocking, and is largest where the coverage is highest.
+The transient differs when the layers are thin and cold.
+At \qty{340}{\kelvin}, breakthrough is delayed by \qty{5}{\percent} for \qty{6}{\milli\metre} of tungsten, and by a factor of \num{3.5e4} for \qty{6}{\micro\metre} (see Fig.~\ref{fig:interface}).
+In the thin layer, the interface holds \qty{8e18}{\per\metre\squared}, against \qty{4e14}{\per\metre\squared} in the two bulk layers, and its coverage reaches \num{0.57}.
+An algebraic condition represents neither.
 
 \begin{figure*}
     \centering
     \includegraphics[width=\textwidth]{interface_trapping}
-    \caption{W/Cu bilayer with the interface described as a manifold and as an equilibrium condition. (a) Temporal evolution of the back-face flux at \qty{340}{\kelvin}. (b) Breakthrough time relative to the equilibrium condition against tungsten thickness. \TODO{draft figure; thicknesses and surface concentration are nominal}}
+    \caption{Temporal evolution of the back-face flux of a W/Cu bilayer at \qty{340}{\kelvin} (a) and breakthrough time relative to the equilibrium condition as a function of tungsten thickness (b), with the interface described as a manifold.}
     \label{fig:interface}
 \end{figure*}
+
+At \qty{550}{\kelvin}, the delay stays below a factor of two at every thickness considered.
+The equilibrium condition is therefore adequate for a monoblock, and inadequate for a thin coating at low temperature.
 
 % ===============================================================
 \section{Application 3: grain-boundary transport in a polycrystal}
