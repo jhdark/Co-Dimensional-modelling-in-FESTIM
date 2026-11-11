@@ -146,16 +146,43 @@
 % ---------------------------------------------------------------
 
 \begin{itemize}
-    \item Setting: a domain $\Omega$ of dimension $d$, partitioned into volume subdomains, with a manifold $\Gamma$ of dimension $d-1$ embedded in it.
-    \item Bulk equation, unchanged from \FESTIM{} v2~\cite{dark_festim_2026}: $\partial_t c = \nabla\cdot(D\nabla c) + S$ per subdomain, with trapping and reactions available as usual.
-    \item Manifold equation: the same balance written with the tangential gradient $\nabla_\Gamma$, with its own diffusivity, and with an advection velocity projected onto $\Gamma$. \TODO{write the equation, and define $\nabla_\Gamma$}
-    \item Coupling is written twice: the same exchange $J$ leaves the bulk as a flux through $\Gamma$ and enters $\Gamma$ as a source. \TODO{equation pair}
-    \item $\Gamma$ may sit on the outer boundary, be buried inside one subdomain, separate two subdomains, or be adjacent to as many subdomains as a grain-boundary network has grains.
-    \item The exchange law is a property of the (manifold, adjacent subdomain) pair, not of a branch of the manifold, so a network with different kinetics on each grain is expressible.
-    \item The form of $J$ is the user's. A linear $J = k\,(c_\mathrm{b} - c_\Gamma)$ is the simplest; a mass-action law recovers the kinetic interface channels of the companion paper. \TODO{cite companion}
-    \item \paragraph{Units} The manifold variable has no imposed convention: a volumetric concentration for a layer of thickness $\lambda$ (source $J/\lambda$), an areal density for an adsorbed layer (source $J$), or a line density. A flux boundary condition is per unit area and a source is per unit volume, so the two halves of the exchange are not dimensionally identical.
-    \item \KEY{Fix one convention here and use it throughout the paper, and say which.} \TODO{decide: areal density is the natural one for the interface application, volumetric for the coolant channel. Check whether one convention covers all three applications.}
-    \item Limits worth stating: a manifold with fast exchange and negligible capacity approaches an algebraic interface condition; a manifold with a thickness $\lambda$ should reproduce a resolved layer of that thickness. \TODO{verify both, analytically if possible}
+    \item Setting: a domain of dimension $d$ split into bulk subdomains $\Omega_i$, and a manifold $\Gamma$ of dimension $d-1$ lying on their facets.
+    \item $\Gamma$ may lie on the outer boundary, inside one subdomain, between two, or between many (see Fig.~\ref{fig:illustration}).
+    \item Bulk equation, unchanged from \FESTIM{}~\cite{dark_festim_2026}:
+\end{itemize}
+\begin{equation}
+    \frac{\partial c_i}{\partial t} = \nabla \cdot \left( D_i \nabla c_i \right) + S_i \quad \text{in } \Omega_i
+    \label{eq:bulk}
+\end{equation}
+\begin{itemize}
+    \item $c_i$ is the mobile concentration in $\Omega_i$, $D_i$ the diffusivity and $S_i$ a source. Trapping and reactions are available as usual.
+    \item Manifold equation, the same balance written with the tangential operator:
+\end{itemize}
+\begin{equation}
+    \frac{\partial c_\Gamma}{\partial t} + \gradG \cdot \left( \mathbf{u}\, c_\Gamma \right) = \gradG \cdot \left( D_\Gamma \gradG c_\Gamma \right) + S_\Gamma + \alpha \sum_i J_i \quad \text{on } \Gamma
+    \label{eq:manifold}
+\end{equation}
+\begin{equation}
+    \gradG = \left( \mathbf{I} - \mathbf{n} \otimes \mathbf{n} \right) \nabla
+    \label{eq:gradG}
+\end{equation}
+\begin{itemize}
+    \item $c_\Gamma$ is the concentration on the manifold, $D_\Gamma$ its diffusivity, $\mathbf{u}$ a drift velocity, $\mathbf{n}$ the unit normal to $\Gamma$ and $J_i$ the flux received from $\Omega_i$.
+    \item The sum runs over the bulk subdomains adjacent to $\Gamma$. Only the tangential part of $\mathbf{u}$ acts, so an ambient velocity can be supplied as it is.
+    \item Coupling: the flux that enters the manifold leaves the bulk,
+\end{itemize}
+\begin{equation}
+    -D_i \nabla c_i \cdot \mathbf{n}_i = J_i \left( c_i, c_\Gamma \right) \quad \text{on } \Gamma
+    \label{eq:coupling}
+\end{equation}
+\begin{itemize}
+    \item $\mathbf{n}_i$ is the normal pointing out of $\Omega_i$. Without an algebraic condition the bulk concentrations on the two sides of $\Gamma$ are independent, and are linked only through $c_\Gamma$.
+    \item The exchange law $J_i$ is supplied by the user, one per adjacent subdomain. The simplest is linear, $J_i = k_i \left( c_i - c_\Gamma \right)$; the applications use mass-transfer, trapping and detrapping laws.
+    \item \paragraph{Units} $J_i$ is a flux per unit area of $\Gamma$. The factor $\alpha$ converts it to the units of $c_\Gamma$, and is a modelling choice.
+    \item $\alpha = 1$ for an areal density (an interfacial plane, a grain boundary); $\alpha = 1/\lambda$ for a volumetric concentration in a layer of thickness $\lambda$; $\alpha = P/A$ for a channel of wetted perimeter $P$ and flow area $A$.
+    \item \FESTIM{} does not impose $\alpha$. \KEY{State the convention with each application: $2/r_\mathrm{i}$ in Sec.~\ref{sec:app:pfr}, 1 in Secs.~\ref{sec:app:interface} and~\ref{sec:app:gb}.}
+    \item Conservation: with Eqs.~\ref{eq:manifold} and~\ref{eq:coupling} the total inventory $\sum_i \int_{\Omega_i} c_i + \alpha^{-1} \int_\Gamma c_\Gamma$ changes only through sources and outer boundaries.
+    \item Limit: for fast exchange and negligible capacity on $\Gamma$, $c_\Gamma$ is slaved to the bulk and an algebraic interface condition is recovered (shown numerically in Sec.~\ref{sec:app:interface:results}).
 \end{itemize}
 
 \begin{figure*}
