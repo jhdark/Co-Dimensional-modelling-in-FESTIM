@@ -6,10 +6,18 @@ channels:
 
 dependencies:
   - python=3.11
-  - festim
+  # FESTIM 2.2 is the first release carrying the co-dimensional (manifold)
+  # subdomains this paper describes. No extra pip install is needed on top.
+  - festim=2.2
   - pandas
   - matplotlib
   - pyvista
+  # needed to run the FESTIM codim system tests (test/system_tests/test_codim1_*.py)
+  - pytest
+  - sympy
+  - scipy
+  # Voronoi polycrystal meshes (Application 3)
+  - python-gmsh
   - pip
   - pip:
     - morethemes
