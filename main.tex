@@ -88,11 +88,24 @@
 \address[umn]{Department of Mechanical Engineering, University of Minnesota, 111 Church Street SE, Minneapolis, MN 55455, USA}
 
 \begin{abstract}
-\TODO{Abstract. Write last, once the argument in Sec.~\ref{sec:intro} is settled.}
+Thin features such as material interfaces, grain boundaries and coolant channels often control hydrogen transport in fusion components, yet they are costly to resolve in a mesh.
+This work presents a co-dimensional description of such features in the open-source hydrogen transport code \FESTIM{}.
+The feature is a subdomain of one dimension less than the mesh, called a manifold, which carries its own transport equation and exchanges a flux with the bulk.
+The manifold and the bulk are solved together in a single nonlinear system.
+The implementation converges at second order against a manufactured solution, in 2D and on a tilted manifold in 3D.
+Three applications are presented.
+A permeator tube with the flowing liquid carried on a manifold reproduces published extraction efficiencies of \num{0.690} and \num{0.415}.
+An interface carrying its own inventory reproduces molecular dynamics results at Be/BeO and a multi-site rate-equation model at W/Cu.
+For a W/Cu bilayer, the interfacial inventory leaves the steady flux unchanged but delays breakthrough by more than four orders of magnitude in thin layers at low temperature.
+Finally, the grain-boundary network of a Voronoi polycrystal is described as a single manifold, with no condition required at triple junctions.
 \end{abstract}
 
 \begin{keyword}
-    \TODO{keywords} \sep
+    hydrogen transport \sep
+    co-dimensional modelling \sep
+    interfaces \sep
+    grain boundaries \sep
+    finite element method \sep
     \FESTIM{}
 \end{keyword}
 
