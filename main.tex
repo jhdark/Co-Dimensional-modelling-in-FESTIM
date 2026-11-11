@@ -535,51 +535,47 @@ The equilibrium condition is therefore adequate for a monoblock, and inadequate 
 \label{sec:app:gb:setup}
 % ---------------------------------------------------------------
 
-\begin{itemize}
-    \item Grain boundaries are fast paths for hydrogen.
-        \TODO{cite Fisher; grain-boundary diffusion data}
-    \item Geometry: a 2D Voronoi tessellation of 30 grains in a square of side $L$, meshed so that every boundary lies on facets.
-    \item Each grain is a bulk subdomain with its own concentration $c_g$.
-        The whole boundary network is one manifold, adjacent to every grain, with one field.
-    \item The boundaries have no thickness.
-        The network carries an areal density $\sigma$, with $\alpha = 1$:
-\end{itemize}
+Grain boundaries can act as fast diffusion paths for hydrogen. \TODO{cite Fisher; grain-boundary diffusion data}
+The third application considers a 2D Voronoi tessellation of 30 grains in a square of side $L$, meshed so that every boundary lies on facets.
+Each grain is a bulk subdomain with its own concentration $c_g$.
+The whole boundary network is one manifold, adjacent to every grain, with a single field.
+The boundaries have no thickness: the network carries an areal density $\sigma$, with $\alpha = 1$:
 \begin{equation}
-    \frac{\partial \sigma}{\partial t} = \gradG \cdot \left( D_\mathrm{gb} \gradG \sigma \right) + \sum_g J_g, \qquad J_g = k_\mathrm{t}\, c_g - k_\mathrm{d}\, \sigma
+    \begin{aligned}
+        \frac{\partial \sigma}{\partial t} &= \gradG \cdot \left( D_\mathrm{gb} \gradG \sigma \right) + \sum_g J_g \\
+        J_g &= k_\mathrm{t}\, c_g - k_\mathrm{d}\, \sigma
+    \end{aligned}
     \label{eq:gb}
 \end{equation}
-\begin{itemize}
-    \item $D_\mathrm{gb}$ is the diffusivity along the boundaries, $k_\mathrm{t}$ a trapping velocity and $k_\mathrm{d}$ a detrapping rate.
-        Their ratio $k_\mathrm{t}/k_\mathrm{d}$ is a segregation length.
-    \item One field on a connected network: hydrogen crosses a triple junction with no junction condition to write.
-    \item Hydrogen passes from one grain to the next only through the boundary between them.
-    \item Conditions: unit concentration on one face, for the grains and for the boundary ends at equilibrium with them; zero on the opposite face.
-    \item The case is dimensionless: $D_\mathrm{gb}/D = 10^{3}$, $k_\mathrm{t} L / D = 10^{2}$, $k_\mathrm{t}/(k_\mathrm{d} L) = 10^{-2}$.
-        \TODO{decide whether to source values for tungsten}
-    \item Scope: a demonstration on a synthetic microstructure.
-        Measured microstructures and homogenisation are left to future work.
-\end{itemize}
+where $D_\mathrm{gb}$ is the diffusivity along the boundaries, $k_\mathrm{t}$ is a trapping velocity and $k_\mathrm{d}$ is a detrapping rate.
+The ratio $k_\mathrm{t}/k_\mathrm{d}$ is a segregation length.
+
+Since one field lives on a connected network, hydrogen crosses a triple junction with no junction condition to write.
+Hydrogen passes from one grain to the next only through the boundary between them.
+A unit concentration is applied on one face of the square, to the grains and to the ends of the boundaries in equilibrium with them.
+The concentration is set to zero on the opposite face.
+The case is dimensionless, with $D_\mathrm{gb}/D = 10^{3}$, $k_\mathrm{t} L / D = 10^{2}$ and $k_\mathrm{t}/(k_\mathrm{d} L) = 10^{-2}$.
+It is a demonstration on a synthetic microstructure, and none of these values is taken from a measurement.
 
 % ---------------------------------------------------------------
 \subsection{Results}
 \label{sec:app:gb:results}
 % ---------------------------------------------------------------
 
-\begin{itemize}
-    \item The network fills ahead of the grains and feeds them from their boundaries inwards (see Fig.~\ref{fig:polycrystal}a).
-    \item At steady state the network carries 31 times the flux of the grains (see Fig.~\ref{fig:polycrystal}b).
-    \item Breakthrough occurs about three orders of magnitude earlier than with $D_\mathrm{gb} = D$.
-    \item The flux carried by the network and the inventory it holds are exported separately from those of the grains, which a homogenised diffusivity cannot provide.
-    \item Cost: the network adds one degree of freedom per boundary vertex, whatever the physical width of a boundary.
-        \TODO{cell counts, against an estimate for a resolved boundary}
-\end{itemize}
+The network fills ahead of the grains and feeds them from their boundaries inwards (see Fig.~\ref{fig:polycrystal}a).
+At steady state, the network carries 31 times the flux of the grains (see Fig.~\ref{fig:polycrystal}b).
+Breakthrough occurs approximately three orders of magnitude earlier than with $D_\mathrm{gb} = D$.
 
 \begin{figure*}
     \centering
     \includegraphics[width=\textwidth]{polycrystal}
-    \caption{Grain-boundary transport in a 2D Voronoi polycrystal of 30 grains, with the boundary network as one manifold of no thickness. (a) Concentration in the grains and on the network at $tD/L^2 = 10^{-3}$, for $D_\mathrm{gb}/D = 10^{3}$. (b) Temporal evolution of the exit flux carried by the network and by the grains. \TODO{draft figure, dimensionless}}
+    \caption{Grain-boundary transport in a 2D Voronoi polycrystal of 30 grains, with the boundary network described as one manifold: concentration at $tD/L^2 = 10^{-3}$ (a) and temporal evolution of the exit flux carried by the network and by the grains (b).}
     \label{fig:polycrystal}
 \end{figure*}
+
+The flux carried by the network and the inventory it holds are exported separately from those of the grains.
+A homogenised diffusivity provides neither.
+The network adds one degree of freedom per vertex lying on a boundary, whatever the physical width of that boundary. \TODO{cell counts, against an estimate for a resolved boundary}
 
 % ===============================================================
 \section{Discussion}
