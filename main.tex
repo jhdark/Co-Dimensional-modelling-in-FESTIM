@@ -180,20 +180,25 @@ To our knowledge, it has not been available in a hydrogen transport code alongsi
 \label{sec:method:governing}
 % ---------------------------------------------------------------
 
-\begin{itemize}
-    \item Setting: a domain of dimension $d$ split into bulk subdomains $\Omega_i$, and a manifold $\Gamma$ of dimension $d-1$ lying on their facets.
-    \item $\Gamma$ may lie on the outer boundary, inside one subdomain, between two, or between many (see Fig.~\ref{fig:illustration}).
-    \item Bulk equation, unchanged from \FESTIM{}~\cite{dark_festim_2026}:
-\end{itemize}
+Consider a domain of dimension $d$ divided into bulk subdomains $\Omega_i$, and a manifold $\Gamma$ of dimension $d-1$ lying on their facets.
+The manifold may lie on the outer boundary, inside one subdomain, between two subdomains or between many.
+It may also end inside the domain (see Fig.~\ref{fig:illustration}).
+In each bulk subdomain, the transport of mobile hydrogen is unchanged from \FESTIM{}~\cite{dark_festim_2026}:
 \begin{equation}
     \frac{\partial c_i}{\partial t} = \nabla \cdot \left( D_i \nabla c_i \right) + S_i \quad \text{in } \Omega_i
     \label{eq:bulk}
 \end{equation}
-\begin{itemize}
-    \item $c_i$ is the mobile concentration in $\Omega_i$, $D_i$ the diffusivity and $S_i$ a source.
-        Trapping and reactions are available as usual.
-    \item Manifold equation, the same balance written with the tangential operator:
-\end{itemize}
+where $c_i$ is the mobile concentration in $\Omega_i$, $D_i$ is the diffusivity and $S_i$ is a source term.
+Trapping and reactions are available as usual and are omitted here for brevity.
+
+\begin{figure*}
+    \centering
+    \includegraphics[width=\textwidth]{illustration}
+    \caption{Illustration of a manifold $\Gamma$ with a diffusivity 200 times that of the bulk, embedded in a 2D domain loaded on its left edge: concentration fields (a) and profiles along $y = 0.5$ (b). The quantities are dimensionless.}
+    \label{fig:illustration}
+\end{figure*}
+
+The manifold carries the same balance, written with the tangential operator:
 \begin{equation}
     \frac{\partial c_\Gamma}{\partial t} + \gradG \cdot \left( \mathbf{u}\, c_\Gamma \right) = \gradG \cdot \left( D_\Gamma \gradG c_\Gamma \right) + S_\Gamma + \alpha \sum_i J_i \quad \text{on } \Gamma
     \label{eq:manifold}
@@ -202,114 +207,131 @@ To our knowledge, it has not been available in a hydrogen transport code alongsi
     \gradG = \left( \mathbf{I} - \mathbf{n} \otimes \mathbf{n} \right) \nabla
     \label{eq:gradG}
 \end{equation}
-\begin{itemize}
-    \item $c_\Gamma$ is the concentration on the manifold, $D_\Gamma$ its diffusivity, $\mathbf{u}$ a drift velocity, $\mathbf{n}$ the unit normal to $\Gamma$ and $J_i$ the flux received from $\Omega_i$.
-    \item The sum runs over the bulk subdomains adjacent to $\Gamma$.
-        Only the tangential part of $\mathbf{u}$ acts, so an ambient velocity can be supplied as it is.
-    \item Coupling: the flux that enters the manifold leaves the bulk,
-\end{itemize}
+where $c_\Gamma$ is the concentration on the manifold, $D_\Gamma$ is its diffusivity, $\mathbf{u}$ is a drift velocity and $S_\Gamma$ is a source term.
+$\mathbf{n}$ is the unit normal to $\Gamma$, and $J_i$ is the flux received from $\Omega_i$.
+The sum runs over the bulk subdomains adjacent to $\Gamma$.
+Equation~\ref{eq:gradG} removes the normal component of the gradient, so only the tangential part of $\mathbf{u}$ acts on the manifold.
+
+The flux that enters the manifold leaves the bulk:
 \begin{equation}
     -D_i \nabla c_i \cdot \mathbf{n}_i = J_i \left( c_i, c_\Gamma \right) \quad \text{on } \Gamma
     \label{eq:coupling}
 \end{equation}
-\begin{itemize}
-    \item $\mathbf{n}_i$ is the normal pointing out of $\Omega_i$.
-        Without an algebraic condition the bulk concentrations on the two sides of $\Gamma$ are independent, and are linked only through $c_\Gamma$.
-    \item The exchange law $J_i$ is supplied by the user, one per adjacent subdomain.
-        The simplest is linear, $J_i = k_i \left( c_i - c_\Gamma \right)$; the applications use mass-transfer, trapping and detrapping laws.
-    \item \textbf{Units.} $J_i$ is a flux per unit area of $\Gamma$.
-        The factor $\alpha$ converts it to the units of $c_\Gamma$, and is a modelling choice.
-    \item $\alpha = 1$ for an areal density (an interfacial plane, a grain boundary); $\alpha = 1/\lambda$ for a volumetric concentration in a layer of thickness $\lambda$; $\alpha = P/A$ for a channel of wetted perimeter $P$ and flow area $A$.
-    \item \FESTIM{} does not impose $\alpha$.
-        \KEY{State the convention with each application: $2/r_\mathrm{i}$ in Sec.~\ref{sec:app:pfr}, 1 in Secs.~\ref{sec:app:interface} and~\ref{sec:app:gb}.}
-    \item Conservation: with Eqs.~\ref{eq:manifold} and~\ref{eq:coupling} the total inventory $\sum_i \int_{\Omega_i} c_i + \alpha^{-1} \int_\Gamma c_\Gamma$ changes only through sources and outer boundaries.
-    \item Limit: for fast exchange and negligible capacity on $\Gamma$, $c_\Gamma$ is slaved to the bulk and an algebraic interface condition is recovered (shown numerically in Sec.~\ref{sec:app:interface:results}).
-\end{itemize}
+where $\mathbf{n}_i$ is the normal pointing out of $\Omega_i$.
+No condition links the bulk concentrations on the two sides of $\Gamma$ directly.
+They are independent and communicate only through $c_\Gamma$.
+The exchange law $J_i$ is supplied by the user, one per adjacent subdomain.
+The simplest is linear, $J_i = k_i \left( c_i - c_\Gamma \right)$, and the applications below use mass-transfer, trapping and detrapping laws.
 
-\begin{figure*}
-    \centering
-    \includegraphics[width=\textwidth]{illustration}
-    \caption{Illustration of a co-dimensional subdomain: a line $\Gamma$ with a diffusivity 200 times that of the bulk, embedded in a 2D domain loaded on its left edge. (a) Concentration in the bulk and on $\Gamma$. (b) Profiles along $y = 0.5$. \TODO{draft figure, dimensionless}}
-    \label{fig:illustration}
-\end{figure*}
+The exchange flux $J_i$ is expressed per unit area of $\Gamma$.
+The factor $\alpha$ in Eq.~\ref{eq:manifold} converts it to the units of $c_\Gamma$, and its value is a modelling choice.
+For an areal density, such as the population of an interfacial plane, $\alpha = 1$.
+For a volumetric concentration in a layer of thickness $\lambda$, $\alpha = 1/\lambda$.
+For a channel of wetted perimeter $P$ and flow area $A$, $\alpha = P/A$.
+\FESTIM{} does not impose this choice, so the value used is stated with each application.
+
+With Eqs.~\ref{eq:manifold} and~\ref{eq:coupling}, the total inventory $\sum_i \int_{\Omega_i} c_i + \alpha^{-1} \int_\Gamma c_\Gamma$ changes only through sources and outer boundaries.
+When the exchange is fast and the capacity of $\Gamma$ is negligible, $c_\Gamma$ follows the bulk concentrations and an algebraic interface condition is recovered.
+This limit is derived for an interface in Sec.~\ref{sec:app:interface:setup}.
 
 % ---------------------------------------------------------------
 \subsection{Weak formulation and mixed-dimensional assembly}
 \label{sec:method:weak}
 % ---------------------------------------------------------------
 
-\begin{itemize}
-    \item One function space per subdomain, each on its own submesh: cells for $\Omega_i$, facets for $\Gamma$.
-        First-order Lagrange elements throughout.
-    \item Weak form, with test functions $v_i$ and $w$, and no drift on the outer boundary:
-\end{itemize}
+Each subdomain has its own function space, defined on its own submesh: the cells of $\Omega_i$ and the facets of $\Gamma$.
+First-order Lagrange elements are used throughout.
+With test functions $v_i$ and $w$, and omitting outer boundary terms, the weak form reads:
 \begin{equation}
-    \int_{\Omega_i} \frac{\partial c_i}{\partial t} v_i + D_i \nabla c_i \cdot \nabla v_i - S_i v_i \,\mathrm{d}x + \int_\Gamma J_i\, v_i \,\mathrm{d}s = 0
+    \int_{\Omega_i} \left( \frac{\partial c_i}{\partial t} v_i + D_i \nabla c_i \cdot \nabla v_i - S_i v_i \right) \mathrm{d}x + \int_\Gamma J_i\, v_i \,\mathrm{d}s = 0
     \label{eq:weak:bulk}
 \end{equation}
-\begin{equation}
-    \int_\Gamma \frac{\partial c_\Gamma}{\partial t} w + \left( D_\Gamma \gradG c_\Gamma - \mathbf{u}\, c_\Gamma \right) \cdot \gradG w - S_\Gamma w \,\mathrm{d}s - \alpha \sum_i \int_\Gamma J_i\, w \,\mathrm{d}s = 0
+\begin{multline}
+    \int_\Gamma \left( \frac{\partial c_\Gamma}{\partial t} w + \left( D_\Gamma \gradG c_\Gamma - \mathbf{u}\, c_\Gamma \right) \cdot \gradG w - S_\Gamma w \right) \mathrm{d}s \\
+    - \alpha \sum_i \int_\Gamma J_i\, w \,\mathrm{d}s = 0
     \label{eq:weak:manifold}
-\end{equation}
-\begin{itemize}
-    \item The drift term is in divergence form.
-        A manifold end with no condition therefore carries zero total flux, and an outlet needs an explicit outflow condition.
-    \item The two kinds of integral in Eq.~\ref{eq:weak:manifold} need different integration domains: the tangential terms are integrated on the submesh of $\Gamma$, the exchange terms on the facets of the parent mesh, where the bulk fields can be evaluated.
-    \item \textsc{dolfinx}~\cite{baratta_dolfinx_2023} compiles one integration domain per form, so the residual is split into groups that are accumulated into one vector and one matrix.
-    \item The system stays monolithic: one Newton solve and one Jacobian per time step, with no sub-iteration between the manifold and the bulk.
-    \item Inside the mesh, $\Gamma$ is integrated over interior facets and each exchange term is restricted to one side.
-        One exchange is declared per adjacent subdomain.
-    \item Beyond two adjacent subdomains there is no consistent pair of sides, since past a triple junction the manifold separates a different pair.
-        Each adjacent subdomain is then given its own integral, on which it is the restricted side.
-    \item Time integration is backward Euler, as in the rest of \FESTIM{}.
-    \item \TODO{cite scifem, used for the interface data; acknowledge the assembly callbacks adapted from J. S. Dokken}
-\end{itemize}
+\end{multline}
+The drift term of Eq.~\ref{eq:weak:manifold} is integrated by parts.
+An end of the manifold with no condition applied therefore carries zero total flux, and an outlet requires an explicit outflow condition.
+Time derivatives are discretised with the backward Euler scheme, as in the rest of \FESTIM{}.
+
+The two integrals of Eq.~\ref{eq:weak:manifold} require different integration domains.
+The tangential terms are integrated on the submesh of $\Gamma$, where $\gradG$ is defined.
+The exchange terms are integrated on the facets of the parent mesh, where the bulk fields can be evaluated.
+\textsc{dolfinx}~\cite{baratta_dolfinx_2023} compiles one integration domain per form.
+The residual is therefore split into groups, which are accumulated into a single vector and a single matrix. \TODO{cite scifem; acknowledge the assembly callbacks adapted from J. S. Dokken}
+The system remains monolithic: one Newton solve is performed per time step, with no sub-iteration between the manifold and the bulk.
+
+Inside the mesh, $\Gamma$ is integrated over interior facets, and each exchange term is restricted to one side.
+One exchange is therefore declared per adjacent subdomain.
+Beyond two adjacent subdomains, there is no consistent pair of sides, since the manifold separates a different pair past a triple junction.
+In this case, each adjacent subdomain is given its own integral, on which it is the restricted side.
 
 % ---------------------------------------------------------------
 \subsection{\FESTIM{} user API}
 \label{sec:method:api}
 % ---------------------------------------------------------------
 
-\begin{itemize}
-    \item A manifold is a \texttt{VolumeSubdomain} whose \texttt{dim} is one less than that of the mesh, located by a function or by a facet tag.
-        \TODO{code listing, ten lines: one manifold, one species, one exchange}
-    \item The exchange of Eq.~\ref{eq:coupling} is written twice: a \texttt{ParticleFluxBC} on the bulk species and a \texttt{ParticleSource} on the manifold species, each reading both concentrations.
-    \item Available on a manifold: several species, reactions between them, trapping, drift terms, fixed concentration and outflow conditions on its ends, initial conditions.
-    \item Exports: totals and averages over the manifold, the exchange flux on its facets, and the flux through its ends.
-    \item Cartesian, cylindrical and spherical coordinates are supported.
-        In a 1D mesh the manifold is a point.
-    \item A pair of subdomains is separated either by an algebraic interface condition or by a manifold, never both.
-    \item Limitations: codimension one only; resolution along the manifold is inherited from the parent mesh; drift-dominated transport is not stabilised.
-\end{itemize}
+A manifold is declared as a \texttt{VolumeSubdomain} whose dimension is one less than that of the mesh.
+The exchange of Eq.~\ref{eq:coupling} is written twice, as a flux on the bulk species and as a source on the manifold species:
+\begin{python}
+import festim as F
+
+gamma = F.VolumeSubdomain(
+    id=2, dim=1, material=mat_gamma,
+    locator=lambda x: np.isclose(x[0], 0))
+c = F.Species("c", subdomains=[bulk])
+c_g = F.Species("c_g", subdomains=[gamma])
+both = {"c": c, "c_g": c_g}
+J = lambda c, c_g: k * (c - c_g)
+
+flux = F.ParticleFluxBC(
+    subdomain=gamma, species=c,
+    value=lambda c, c_g: -J(c, c_g),
+    species_dependent_value=both)
+source = F.ParticleSource(
+    volume=gamma, species=c_g,
+    value=lambda c, c_g: alpha * J(c, c_g),
+    species_dependent_value=both)
+\end{python}
+Here a line in a 2D mesh exchanges a linear flux with the bulk subdomain \texttt{bulk}.
+Both objects read the two concentrations, which live on different submeshes.
+
+A manifold supports several species, reactions between them, trapping and drift terms.
+Fixed concentration and outflow conditions can be applied on its ends.
+The exports include totals and averages over the manifold, the exchange flux on its facets and the flux through its ends.
+Cartesian, cylindrical and spherical coordinates are supported, and in a 1D mesh the manifold is a point.
+A pair of subdomains is separated either by an algebraic interface condition or by a manifold, never both.
 
 % ---------------------------------------------------------------
 \subsection{Verification}
 \label{sec:method:verification}
 % ---------------------------------------------------------------
 
-\begin{itemize}
-    \item Method of manufactured solutions on the unit square and the unit cube, with $\Gamma$ one face of the domain.
-    \item Exact solution, in coordinates $(\xi_0, \xi_1)$ attached to the domain, with a linear exchange $J = k \left( c - c_\Gamma \right)$:
-\end{itemize}
+The implementation is verified with the method of manufactured solutions on the unit square and the unit cube, with $\Gamma$ one face of the domain.
+With a linear exchange $J = k \left( c - c_\Gamma \right)$, the exact solution is chosen as:
 \begin{equation}
-    c = 1 + \xi_0^2 + \left( 1 + \xi_0 \right) \cos \left( \pi \xi_1 \right), \qquad c_\Gamma = 1 + \left( 1 - \frac{D}{k} \right) \cos \left( \pi \xi_1 \right)
+    \begin{aligned}
+        c &= 1 + \xi_0^2 + \left( 1 + \xi_0 \right) \cos \left( \pi \xi_1 \right) \\
+        c_\Gamma &= 1 + \left( 1 - \frac{D}{k} \right) \cos \left( \pi \xi_1 \right)
+    \end{aligned}
     \label{eq:mms}
 \end{equation}
-\begin{itemize}
-    \item The exchange flux $J = D \cos \left( \pi \xi_1 \right)$ varies along $\Gamma$, so the coupling is exercised.
-        Sources follow from Eqs.~\ref{eq:bulk} and~\ref{eq:manifold}.
-    \item In 3D the cube is rotated so that $\Gamma$ is aligned with no coordinate axis, which exercises Eq.~\ref{eq:gradG}.
-    \item Result: the relative $L^2$ error of both fields decreases at second order, with fitted orders of \num{2.00} in 2D and \num{1.97} in 3D (see Fig.~\ref{fig:convergence}).
-    \item The \FESTIM{} test suite additionally covers conservation across an interior manifold, independence from the order of declaration, triple junctions and radial coordinates.
-        \TODO{name the test files in the data availability section}
-\end{itemize}
+where $\left( \xi_0, \xi_1 \right)$ are coordinates attached to the domain, with $\Gamma$ at $\xi_0 = 0$.
+The sources follow from Eqs.~\ref{eq:bulk} and~\ref{eq:manifold}.
+The exchange flux, $J = D \cos \left( \pi \xi_1 \right)$, varies along $\Gamma$.
+In 3D, the cube is rotated so that $\Gamma$ is aligned with no coordinate axis, which exercises Eq.~\ref{eq:gradG}.
 
 \begin{figure}
     \centering
     \includegraphics[width=\columnwidth]{convergence}
-    \caption{Relative $L^2$ error of the bulk and manifold concentrations against a manufactured solution, in 2D and on a tilted manifold in 3D.}
+    \caption{Relative $L^2$ error of the bulk and manifold concentrations against the manufactured solution of Eq.~\ref{eq:mms}, in 2D and on a tilted manifold in 3D.}
     \label{fig:convergence}
 \end{figure}
+
+The relative $L^2$ error of both fields decreases at second order, as expected for first-order elements (see Fig.~\ref{fig:convergence}).
+The fitted orders are \num{2.00} in 2D and \num{1.97} in 3D.
+The \FESTIM{} test suite additionally covers conservation across an interior manifold, independence from the order of declaration, triple junctions and radial coordinates.
 
 % ===============================================================
 \section{Application 1: coupling a 1D flow model to a 2D/3D component}
