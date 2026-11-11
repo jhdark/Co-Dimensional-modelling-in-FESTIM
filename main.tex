@@ -442,12 +442,11 @@
 % ---------------------------------------------------------------
 
 \begin{itemize}
-    \item Through-thickness flux and breakthrough time against the diffusivity contrast $D_\Gamma/D$, against grain size, and against the exchange rate.
-    \item Partition of the inventory between grains and boundaries, which is what a homogenised model cannot report.
-    \item Comparison with a homogenised effective diffusivity, identifying where it holds and where it fails. \TODO{cite the homogenisation used, and check which Harrison regime each case sits in}
-    \item 2D against 3D: whether a 2D polycrystal over-predicts connectivity of the network, and by how much.
-    \item Cost against a mesh that resolves the boundary width, which for a nanometre-wide boundary in a millimetre-scale sample is the point of the whole exercise.
-    \item \TODO{Decide whether any experimental comparison is available, or whether this section is explicitly a capability demonstration.}
+    \item The network fills ahead of the grains and feeds them from their boundaries inwards (see Fig.~\ref{fig:polycrystal}a).
+    \item At steady state the network carries 31 times the flux of the grains (see Fig.~\ref{fig:polycrystal}b).
+    \item Breakthrough occurs about three orders of magnitude earlier than with $D_\mathrm{gb} = D$.
+    \item The flux carried by the network and the inventory it holds are exported separately from those of the grains, which a homogenised diffusivity cannot provide.
+    \item Cost: the network adds one degree of freedom per boundary vertex, whatever the physical width of a boundary. \TODO{cell counts, against an estimate for a resolved boundary}
 \end{itemize}
 
 \begin{figure*}
