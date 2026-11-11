@@ -582,31 +582,33 @@ The network adds one degree of freedom per vertex lying on a boundary, whatever 
 \label{sec:discussion}
 % ===============================================================
 
-\begin{itemize}
-    \item The three applications use Eqs.~\ref{eq:manifold} and~\ref{eq:coupling} unchanged.
-        Only the exchange law $J_i$ and the factor $\alpha$ differ.
-    \item A manifold is appropriate when the feature is thin against the scale over which the bulk concentration varies, and carries its own state or its own transport.
-    \item It is not appropriate when the profile across the feature matters, or when its thickness is comparable to that scale.
-    \item Relation to an algebraic condition: the manifold contains it as the limit of fast exchange and negligible capacity (Eq.~\ref{eq:interface:lte}).
-        Section~\ref{sec:app:interface:results} gives the regime where the limit holds for W/Cu.
-    \item Relation to a system code: the manifold reproduces the plug-flow solution, and adds the transient and a resolved wall in the same solve.
-    \item The factor $\alpha$ is left to the user and is a likely source of error.
-    \item \TODO{cost, collected across the three applications}
-\end{itemize}
+The three applications use Eqs.~\ref{eq:manifold} and~\ref{eq:coupling} unchanged.
+Only the exchange law $J_i$ and the factor $\alpha$ differ between a flowing liquid, an interfacial plane and a grain-boundary network.
+A manifold is appropriate when the feature is thin compared with the scale over which the bulk concentration varies, and when it carries its own state or its own transport.
+It is not appropriate when the profile across the feature matters.
+
+The manifold contains the algebraic interface condition as the limit of fast exchange and negligible capacity (see Eq.~\ref{eq:interface:lte}).
+The two descriptions give the same steady flux, and differ in the transient by the time needed to fill the interface.
+Section~\ref{sec:app:interface:results} shows that this time is negligible for millimetre layers of W/Cu and dominant for micrometre layers at \qty{340}{\kelvin}.
+Similarly, the manifold reproduces the plug-flow solution of a system code, and adds the transient and a resolved wall in the same solve.
+
+It should be noted that the factor $\alpha$ is left to the user.
+An inconsistent choice gives a model that runs and conserves the wrong quantity, so it is a likely source of error.
 
 % ---------------------------------------------------------------
 \subsection{Limitations and future work}
 \label{sec:discussion:limitations}
 % ---------------------------------------------------------------
 
-\begin{itemize}
-    \item Codimension two, a line in a 3D mesh, is not supported: a bulk field has no well-defined value on such a line.
-    \item Networks and interior manifolds currently run in serial. \VERIFY{status at submission}
-    \item Resolution along the manifold is that of the parent mesh, and drift-dominated transport is not stabilised.
-    \item The exchange law is the main uncertainty.
-        For most interfaces and grain boundaries the rates are not measured, and come from atomistic calculations where they exist.
-    \item Future work will combine a manifold with the kinetic interface channels of the companion paper, and will address measured microstructures.
-\end{itemize}
+Only codimension one is supported.
+A line in a 3D mesh is excluded, since a bulk field has no well-defined value on such a line.
+Networks and interior manifolds currently run in serial. \VERIFY{status at submission}
+The resolution along the manifold is that of the parent mesh, and drift-dominated transport is not stabilised.
+
+The main uncertainty lies in the exchange law.
+For most interfaces and grain boundaries, the rates are not measured, and are available from atomistic calculations only for a few systems.
+Future work will combine a manifold with the kinetic interface channels of the companion paper.
+The application to measured microstructures will be investigated in a future study.
 
 % ===============================================================
 \section{Conclusions}
