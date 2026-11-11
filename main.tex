@@ -477,11 +477,11 @@
 % ---------------------------------------------------------------
 
 \begin{itemize}
-    \item Codimension 2, a line embedded in a 3D mesh, is not covered here. \VERIFY{what the implementation supports}
-    \item Parallel execution: some of the network cases are currently serial only. \VERIFY{status at submission}
-    \item The exchange coefficient is the real gap. The formulation is only as good as the mass-transfer or trapping kinetics supplied to it, and for most interfaces those are not measured.
-    \item Coupling to the kinetic interface channels of the companion paper, so a manifold can carry both an inventory and competing reaction channels.
-    \item Adaptivity, and evolving manifolds such as a growing oxide or a propagating crack.
+    \item Codimension two, a line in a 3D mesh, is not supported: a bulk field has no well-defined value on such a line.
+    \item Networks and interior manifolds currently run in serial. \VERIFY{status at submission}
+    \item Resolution along the manifold is that of the parent mesh, and drift-dominated transport is not stabilised.
+    \item The exchange law is the main uncertainty. For most interfaces and grain boundaries the rates are not measured, and come from atomistic calculations where they exist.
+    \item Future work will combine a manifold with the kinetic interface channels of the companion paper, and will address measured microstructures.
 \end{itemize}
 
 % ===============================================================
