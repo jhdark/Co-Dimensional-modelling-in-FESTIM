@@ -146,23 +146,27 @@ All the results presented in this paper can be reproduced with the scripts descr
 \label{sec:motivation}
 % ===============================================================
 
-\begin{itemize}
-    \item Scale separation: a grain boundary or an interfacial plane is of atomic width, inside components of millimetre scale.
-        \TODO{representative widths with citations}
-    \item A mesh that resolves such a feature pays for it along its whole extent, in cell count, aspect ratio and conditioning.
-    \item \textbf{Homogenisation.} The feature is folded into an effective diffusivity.
-        Its own concentration is lost, and so are the inventory it holds and the flux it carries.
-        \TODO{cite Hart, Fisher}
-    \item \textbf{Algebraic interface condition.} Continuity of chemical potential is imposed on the two bulk concentrations.
-        The interface has no inventory and no time scale, which molecular dynamics at Be/BeO~\cite{hodille_molecular_2022} and rate-equation modelling at W/Cu~\cite{silva-solis_hydrogen_2026} both contradict.
-    \item \textbf{External coupling.} A flowing fluid is handed to a separate system code and coupled through boundary data~\cite{meschini_modeling_2023}.
-        The coupling is explicit and the time steps are not shared.
-    \item \KEY{A manifold keeps what these discard: its own field, transport terms, boundary conditions and exports, solved together with the bulk in one nonlinear system.}
-    \item Mixed-dimensional coupling is established in other fields, for instance flow in fractured porous media.
-        \TODO{cite: D'Angelo and Quarteroni; Boon, Nordbotten and Yotov; Kuchta et al.}
-    \item What is new here is its availability in a hydrogen transport code, alongside trapping and multi-species reactions.
-        \VERIFY{that no other H-transport code offers this}
-\end{itemize}
+The features considered here are separated in scale from the components that contain them.
+An interfacial plane or a grain boundary is of atomic width, inside a component of millimetre scale. \TODO{representative widths, with citations}
+A mesh that resolves such a feature pays for it along its whole extent.
+Three treatments are commonly used to avoid this.
+
+The first is homogenisation, in which the feature is folded into an effective diffusivity of the surrounding material. \TODO{cite Hart; Fisher}
+The concentration in the feature is then no longer a variable of the model.
+Neither the inventory held in the feature nor the flux carried along it can be reported.
+
+The second is an algebraic interface condition, in which continuity of chemical potential is imposed on the two bulk concentrations.
+The interface then holds no inventory and has no time scale of its own.
+However, molecular dynamics simulations of the Be/BeO interface show trapping sites localised at the interface, which fill over a finite time~\cite{hodille_molecular_2022}.
+Rate-equation modelling of the W/Cu interface reaches the same conclusion~\cite{silva-solis_hydrogen_2026}.
+
+The third is external coupling, in which a flowing fluid is handed to a separate system code that exchanges boundary data with the component model~\cite{meschini_modeling_2023}.
+The coupling is then explicit, and the two models do not share a time step.
+
+A manifold keeps what these treatments discard.
+It has its own field, its own transport terms, boundary conditions and exports, and it is solved together with the bulk.
+Mixed-dimensional coupling of this kind is established in other fields, for instance for flow in fractured porous media. \TODO{cite: D'Angelo and Quarteroni; Boon, Nordbotten and Yotov; Kuchta et al.}
+To our knowledge, it has not been available in a hydrogen transport code alongside trapping and multi-species reactions. \VERIFY{}
 
 % TODO(structure): section title. Alternatives: "Methodology",
 %   "Co-dimensional formulation and its implementation".
