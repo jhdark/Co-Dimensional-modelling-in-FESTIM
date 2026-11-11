@@ -12,9 +12,10 @@ It was seeded from the companion *interface models* paper
 so it inherits that paper's preamble, styling, working rules and bibliography.
 **All of that paper's content has been removed.** What is left:
 
-- `main.tex`: the whole manuscript. Currently an **outline**: preamble,
-  frontmatter and one bullet list per section, with `\TODO{}` marks. No prose
-  and no figures are included yet. `lipsum` is loaded for filler while drafting.
+- `main.tex`: the whole manuscript. Currently a **detailed outline**: every
+  section has its equations (15, all labelled), specific bullets with the
+  numbers from the scripts, and its figures. Bullets are one sentence per line.
+  No prose yet. `lipsum` is loaded for filler while drafting.
 - `references.bib`: bibliography, inherited whole from the companion paper.
   **Read the plain-text VERIFICATION NOTICE blocks (around lines 80 and 100)
   before touching it.** Several entries were assembled from web search or pulled
@@ -124,7 +125,8 @@ Still open:
 
 ## Where the work stands
 
-Updated 2026-11-11 (second session). Seven draft figures exist and are included
+Updated 2026-11-11 (third session: equations and specific bullets written into
+`main.tex`, one commit per section). Seven draft figures exist and are included
 in `main.tex` with placeholder captions. All numbers below come from the CSVs
 in `scripts/`.
 
@@ -420,12 +422,30 @@ time later are welcome without asking.
 ## Terminology registry
 
 One term, one meaning. Each row records the sense the paper uses and what was
-banned or renamed to get there. **Empty: repopulate as the paper introduces
-terms.** Candidates to settle early, since the FESTIM docs and the literature
-use several of them interchangeably:
+banned or renamed to get there. Settled 2026-11-11 while outlining; revisit only
+with the authors.
 
 | Term | The one meaning | Notes |
 |---|---|---|
-| manifold / codim-1 subdomain / lower-dimensional entity | TODO: pick one, define it once | FESTIM's docs and API say both "manifold" and "codimensional subdomain". The paper should not. |
-| interface vs manifold | TODO | FESTIM's `Interface` is the algebraic jump condition; a manifold is a subdomain with its own equation. The two are mutually exclusive on a given set of facets, so the words must not blur. |
-| bulk vs volume | TODO | `VolumeSubdomain` covers both a genuine volume and a manifold, so "volume" is ambiguous in prose. |
+| manifold | the codimension-1 subdomain $\Gamma$ carrying its own transport equation | Introduced once in the introduction as "a subdomain of one dimension less than the mesh, called a manifold". Do not alternate with "codim-1 subdomain" or "lower-dimensional entity". "Co-dimensional" is used only for the description or method as a whole. |
+| bulk, bulk subdomain | a full-dimensional subdomain $\Omega_i$ and its field | Never "volume", since FESTIM's `VolumeSubdomain` covers both. |
+| interface | the physical plane between two materials (Application 2) | Not a synonym for manifold. |
+| algebraic interface condition, equilibrium condition | the jump condition on the two bulk concentrations, FESTIM's `Interface` | Never "closure". "Equilibrium condition" is used in Application 2 for the specific ratio of Eq. `eq:interface:lte`. |
+| exchange, exchange law | the flux $J_i$ between $\Omega_i$ and $\Gamma$ and the expression for it | Not "coupling term" or "transfer". |
+| network | the connected set of grain boundaries declared as one manifold (Application 3) | |
+| liquid | the flowing fluid of Application 1 | Not "coolant": the benchmark is a permeator, not a cooling channel. The directory name `1-coolant-channel` and the label `fig:coolant` are historical. |
+
+Notation, fixed in `main.tex`:
+
+| Symbol | Meaning |
+|---|---|
+| $\Omega_i$, $\Gamma$ | bulk subdomain $i$, manifold |
+| $c_i$, $c_\Gamma$ | bulk and manifold concentrations |
+| $D_i$, $D_\Gamma$ | bulk and manifold diffusivities |
+| $J_i$ | exchange flux from $\Omega_i$ into $\Gamma$, per unit area of $\Gamma$ |
+| $\alpha$ | factor converting $J_i$ to the units of $c_\Gamma$: 1 (areal density), $1/\lambda$ (layer), $P/A$ (channel) |
+| `\gradG` | tangential gradient $\nabla_\Gamma = (I - n \otimes n)\nabla$ |
+| $\mathbf{u}$, $\mathbf{n}$, $\mathbf{n}_i$ | drift velocity, normal to $\Gamma$, outward normal of $\Omega_i$ |
+| $c_\mathrm{f}$, $c_\mathrm{w}$, $c_\mathrm{w,l}$, $k_\mathrm{T}$, $\eta$, $\tau$, $\zeta$ | Application 1: liquid and wall concentrations, liquid at the wall, mass transfer coefficient, efficiency, and the two groups of the analytical solution |
+| $n_\Gamma$, $\theta$, $\nu_{i \rightarrow \Gamma}$, $\lambda_i$ | Application 2: site density, coverage, jump frequency, jump distance |
+| $\sigma$, $D_\mathrm{gb}$, $k_\mathrm{t}$, $k_\mathrm{d}$ | Application 3: areal density on the network, boundary diffusivity, trapping velocity, detrapping rate |
