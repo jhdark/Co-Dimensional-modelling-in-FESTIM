@@ -226,14 +226,13 @@
 % ---------------------------------------------------------------
 
 \begin{itemize}
-    \item A manifold is declared as a \texttt{VolumeSubdomain} whose \texttt{dim} is one less than the mesh dimension, with a \texttt{locator}. \TODO{code listing}
-    \item It can be used directly wherever a surface is expected, for instance as the subdomain of a flux boundary condition, with no separate surface subdomain on the same facets.
-    \item The exchange is a \texttt{ParticleFluxBC} on the bulk paired with a \texttt{ParticleSource} on the manifold, with \texttt{species\_dependent\_value} carrying both concentrations across the two meshes. \TODO{code listing}
-    \item Available on a manifold: advection with an ambient velocity vector that self-projects onto $\Gamma$, drift terms, reactions, implicit species, fixed-concentration conditions on the ends of the manifold, and an outflow condition at an outlet.
-    \item An end of a manifold with nothing imposed on it is a closed end, carrying zero total flux with advection balanced by back-diffusion. This is a trap for users and worth one sentence.
-    \item Exports: surface fluxes and derived quantities on the manifold and on its boundary.
-    \item A pair of subdomains is separated either by an algebraic interface condition or by a manifold, never both; \FESTIM{} raises if the two cover the same facets.
-    \item \paragraph{Mesh caveat} The manifold is meshed by the facets of the parent mesh, so resolution along the feature is inherited from the bulk mesh. A wall needing few cells through its thickness may still need many along its length to resolve what happens on the manifold.
+    \item A manifold is a \texttt{VolumeSubdomain} whose \texttt{dim} is one less than that of the mesh, located by a function or by a facet tag. \TODO{code listing, ten lines: one manifold, one species, one exchange}
+    \item The exchange of Eq.~\ref{eq:coupling} is written twice: a \texttt{ParticleFluxBC} on the bulk species and a \texttt{ParticleSource} on the manifold species, each reading both concentrations.
+    \item Available on a manifold: several species, reactions between them, trapping, drift terms, fixed concentration and outflow conditions on its ends, initial conditions.
+    \item Exports: totals and averages over the manifold, the exchange flux on its facets, and the flux through its ends.
+    \item Cartesian, cylindrical and spherical coordinates are supported. In a 1D mesh the manifold is a point.
+    \item A pair of subdomains is separated either by an algebraic interface condition or by a manifold, never both.
+    \item Limitations: codimension one only; resolution along the manifold is inherited from the parent mesh; drift-dominated transport is not stabilised.
 \end{itemize}
 
 % ---------------------------------------------------------------
