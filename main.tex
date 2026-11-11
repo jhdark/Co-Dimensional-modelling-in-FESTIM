@@ -5,7 +5,7 @@
 \usepackage{graphicx}
 \usepackage{subcaption}
 % figures live next to the script that produces them, in scripts/
-\graphicspath{{scripts/}}
+\graphicspath{{scripts/0-method/}{scripts/1-coolant-channel/}{scripts/2-interface-trapping/}{scripts/3-polycrystal/}}
 \usepackage{xcolor}
 \usepackage{todonotes}
 \usepackage{overpic}
@@ -14,6 +14,7 @@
 \usepackage{enumitem}
 \usepackage[colorlinks = true, linkcolor = blue, urlcolor  = blue, citecolor = blue]{hyperref}
 \usepackage{pythonhighlight}
+\usepackage{lipsum}  % filler text while drafting, remove before submission
 
 % Compact nested lists for the outline
 \setlist[itemize]{noitemsep, topsep=3pt, parsep=2pt, leftmargin=1.4em}
@@ -155,6 +156,13 @@
     \item Limits worth stating: a manifold with fast exchange and negligible capacity approaches an algebraic interface condition; a manifold with a thickness $\lambda$ should reproduce a resolved layer of that thickness. \TODO{verify both, analytically if possible}
 \end{itemize}
 
+\begin{figure*}
+    \centering
+    \includegraphics[width=\textwidth]{illustration}
+    \caption{Illustration of a co-dimensional subdomain: a line $\Gamma$ with a diffusivity 200 times that of the bulk, embedded in a 2D domain loaded on its left edge. (a) Concentration in the bulk and on $\Gamma$. (b) Profiles along $y = 0.5$. \TODO{draft figure, dimensionless}}
+    \label{fig:illustration}
+\end{figure*}
+
 % ---------------------------------------------------------------
 \subsection{Weak formulation and mixed-dimensional assembly}
 \label{sec:method:weak}
@@ -204,6 +212,13 @@
     \item \TODO{Is a spatial convergence study wanted, showing the expected order for the coupled problem? It is the one thing the test suite checks that a reader cannot see.}
 \end{itemize}
 
+\begin{figure}
+    \centering
+    \includegraphics[width=\columnwidth]{convergence}
+    \caption{Relative $L^2$ error of the bulk and manifold concentrations against a manufactured solution, in 2D and on a tilted manifold in 3D.}
+    \label{fig:convergence}
+\end{figure}
+
 % ===============================================================
 \section{Application 1: coupling a 1D flow model to a 2D/3D component}
 \label{sec:app:pfr}
@@ -240,6 +255,13 @@
     \item Contrast with the usual practice of coupling a component model to a separate system code, where the exchange is explicit and the time steps are not shared.
 \end{itemize}
 
+\begin{figure*}
+    \centering
+    \includegraphics[width=\textwidth]{permeator}
+    \caption{Permeator tube with the flowing liquid carried on a manifold along the inner surface of an axisymmetric wall. (a) Extraction efficiency along the tube against the analytical solution, for the two cases of Rader et al. (b) Outlet efficiency during start-up of the Pb-17Li case. \TODO{draft figure; cite Humrickhouse and Merrill 2015, Rader et al. 2018}}
+    \label{fig:coolant}
+\end{figure*}
+
 % ===============================================================
 \section{Application 2: interfaces carrying their own inventory}
 \label{sec:app:interface}
@@ -273,6 +295,27 @@
     \item Honest caveat, kept and not softened: these are demonstrations on published parameters, not validations against permeation data.
 \end{itemize}
 
+\begin{figure*}
+    \centering
+    \includegraphics[width=\textwidth]{be_beo}
+    \caption{Filling of two Be/BeO interfaces described as a manifold, against the molecular dynamics of Hodille et al. \TODO{draft figure; cite Hodille 2022 and state where the rate parameters come from}}
+    \label{fig:bebeo}
+\end{figure*}
+
+\begin{figure*}
+    \centering
+    \includegraphics[width=\textwidth]{w_cu_network}
+    \caption{Multi-site kinetic model of the W/Cu interface of Silva-Sol\'is carried as fourteen species on one manifold. (a) Temporal evolution of four sites at \qty{340}{\kelvin} against the reported steady values. (b) Characteristic frequency against temperature. \TODO{draft figure}}
+    \label{fig:wcunetwork}
+\end{figure*}
+
+\begin{figure*}
+    \centering
+    \includegraphics[width=\textwidth]{interface_trapping}
+    \caption{W/Cu bilayer with the interface described as a manifold and as an equilibrium condition. (a) Temporal evolution of the back-face flux at \qty{340}{\kelvin}. (b) Breakthrough time relative to the equilibrium condition against tungsten thickness. \TODO{draft figure; thicknesses and surface concentration are nominal}}
+    \label{fig:interface}
+\end{figure*}
+
 % ===============================================================
 \section{Application 3: grain-boundary transport in a polycrystal}
 \label{sec:app:gb}
@@ -305,6 +348,13 @@
     \item Cost against a mesh that resolves the boundary width, which for a nanometre-wide boundary in a millimetre-scale sample is the point of the whole exercise.
     \item \TODO{Decide whether any experimental comparison is available, or whether this section is explicitly a capability demonstration.}
 \end{itemize}
+
+\begin{figure*}
+    \centering
+    \includegraphics[width=\textwidth]{polycrystal}
+    \caption{Grain-boundary transport in a 2D Voronoi polycrystal of 30 grains, with the boundary network as one manifold of no thickness. (a) Concentration in the grains and on the network at $tD/L^2 = 10^{-3}$, for $D_\mathrm{gb}/D = 10^{3}$. (b) Temporal evolution of the exit flux carried by the network and by the grains. \TODO{draft figure, dimensionless}}
+    \label{fig:polycrystal}
+\end{figure*}
 
 % ===============================================================
 \section{Discussion}
