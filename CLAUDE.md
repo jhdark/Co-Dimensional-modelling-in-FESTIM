@@ -12,17 +12,25 @@ It was seeded from the companion *interface models* paper
 so it inherits that paper's preamble, styling, working rules and bibliography.
 **All of that paper's content has been removed.** What is left:
 
-- `main.tex`: the whole manuscript. Currently an **empty section skeleton**:
-  preamble, frontmatter and `\TODO{}`-marked section shells, nothing else. The
-  section list is provisional and should be revised once the argument is fixed.
+- `main.tex`: the whole manuscript. Currently an **outline**: preamble,
+  frontmatter and one bullet list per section, with `\TODO{}` marks. No prose
+  and no figures are included yet. `lipsum` is loaded for filler while drafting.
 - `references.bib`: bibliography, inherited whole from the companion paper.
   **Read the plain-text VERIFICATION NOTICE blocks (around lines 80 and 100)
   before touching it.** Several entries were assembled from web search or pulled
   from Crossref, not exported from Zotero; placeholders deliberately carry
   `author = {TODO, Replace}` so they fail loudly. Many entries are inherited and
   will not be cited here; prune only at the end, not now.
-- `scripts/`: empty apart from `environment.yml` (conda env `codim-env`) and a
-  stub README.
+- `scripts/`: the simulations and figures, one numbered directory per paper
+  section. **Read `scripts/README.md` first**: it lists every script, what it
+  writes, its run time, and which parameters are sourced and which are nominal.
+- `STYLE.md`: a distilled guide to the first author's own papers (structure,
+  voice, captions, section lengths). **Consult it before writing any prose**
+  instead of re-reading the PDFs. Where it conflicts with the rules below, the
+  rules below win.
+- `paper_references/` (gitignored, local only): the PDFs `STYLE.md` was built
+  from, the companion `interface_models.pdf`, and `yosvany_thesis.pdf`
+  (Silva-Solis, HAL tel-04750846), the data source for Application 2.
 
 Class: `elsarticle`, `[5p]` throughout (the companion paper's look, which this
 paper keeps). `[preprint,11pt]` is available for drafting but is not what the
@@ -46,14 +54,23 @@ This is explicitly the paper the companion scopes *out*: the interface-models
 paper treats interfaces as reactive surfaces with no stored inventory, and defers
 interfacial inventory and the codim-1 formulation to here. The Be/BeO and W/Cu
 cases (Hodille MD, Silva-Solis DFT + rate equations) belong to this paper, and
-both are already in `references.bib`. The companion's notes describe a
-`3-interface trapping/` script directory (Be/BeO, W/Cu, raw DOLFINx) held back
-for this paper; **it is not on this machine**, so ask the user for it before
-assuming those results exist.
+both are already in `references.bib`. The W/Cu data comes from the Silva-Solis
+thesis in `paper_references/`. The Be/BeO rate parameters and the digitised
+molecular dynamics data come from the authors' old scripts in
+`paper_references/interface_examples/`.
 
 ## The plan
 
-Agreed 2026-09-08. The paper covers the co-dimensional (manifold) coupling now
+**Length (set 2026-11-11): 6 to 7 pages in all, concise and to the point.**
+Sections 1 to 3 take 3 to 4 pages together. Sections 4, 5 and 6 take about one
+page each, 30 to 40 % figures and 60 to 70 % text, so one full-width two-panel
+figure per application. The outline in `main.tex` holds more than fits: cut to
+the budget when converting to prose, do not expand.
+
+**Order of work (set 2026-11-11): scripts, data and figures first, writing
+after.** Do not start prose until the figures for a section are settled.
+
+Section list agreed 2026-09-08. The paper covers the co-dimensional (manifold) coupling now
 available in \FESTIM{}, then demonstrates it on three applications.
 
 Section list, as in `main.tex` (headings only so far, no bullets, no prose):
@@ -105,10 +122,86 @@ Still open:
 - Isotope/multi-species scope: nothing in the plan requires more than one species
   yet.
 
+## Where the work stands
+
+Updated 2026-11-11 (second session). Seven draft figures exist and are included
+in `main.tex` with placeholder captions. All numbers below come from the CSVs
+in `scripts/`.
+
+| Section | Figure | What it shows | Result |
+|---|---|---|---|
+| 3 | `illustration.pdf` | a fast line embedded in a 2D bulk, dimensionless | a manifold may end inside the bulk |
+| 3.4 | `convergence.pdf` | MMS, 2D and tilted 3D | second order on both fields (2.00 in 2D, 1.97 in 3D) |
+| 4 | `permeator.pdf` | permeator tube, liquid on a manifold along an axisymmetric wall; the two cases of Rader et al. 2018 | efficiency 0.6897 (Pb-17Li/RAFM) and 0.4154 (FLiBe/Ni) against published 0.690 and 0.415; within 2e-5 of the analytical solution along the tube; start-up transient of the Pb-17Li case |
+| 5 | `be_beo.pdf` | filling of two Be/BeO interfaces against Hodille's MD at 750, 1000, 1250 K | the point-manifold model follows the MD at both interfaces |
+| 5 | `w_cu_network.pdf` | the 14-site W/Cu network of the Silva-Solis thesis as 14 species on one point manifold | steady concentrations within 3 to 19 % of thesis Table 5; time to steady state 2969, 1.20, 1.77e-3 s against 2630, 1.06, 1.55e-3 s |
+| 5 | `interface_trapping.pdf` | W/Cu bilayer, three-state interface manifold against `festim.Interface` | steady flux identical; breakthrough delayed 5 % for 6 mm of W at 340 K, by 3.5e4 for 6 um |
+| 6 | `polycrystal.pdf` | 30-grain 2D Voronoi polycrystal, one subdomain per grain, network of no thickness | at D_gb/D = 1e3 the network carries about 30 times the lattice flux and breaks through three orders of magnitude earlier |
+
+User decisions recorded 2026-11-11:
+
+- **Application 1 needs no real geometry.** It is a benchmark against a trusted
+  solution, found by literature search: Humrickhouse and Merrill 2015 (analytical)
+  and Rader et al. 2018 (numbers). No experiment with enough reported data was
+  found; Fukada et al. 2015 and Yoshimura et al. 2016 (Pb-Li through Inconel,
+  permeation against flow rate) are the only candidates and are paywalled.
+- **Application 2 keeps three strands**: Be/BeO against Hodille's MD, replication
+  of Silva-Solis, and the thin-layer finding. Old scripts and the digitised MD
+  data are in `paper_references/interface_examples/`.
+- **Application 3 is 2D only and light.** Grain boundaries have **no thickness**:
+  the network field is an areal density with its own transport equation, and the
+  exchange enters with no conversion factor. Microstructure modelling proper is
+  the subject of a future paper built on
+  <https://github.com/festim-dev/FESTIM-Microstructure>; here it is touched on
+  with Voronoi geometry only. That package may be read for ideas but **was not
+  and should not be installed** (blocked as external code); `voronoi.py` is our
+  own and credits it.
+
+The Be/BeO parameters were checked against Hodille's paper
+(`paper_references/D_interface_BeBeO_final_version.pdf`): Eq. (6), Table 1,
+`n_i = 1e20 m-2` and `c_Be = 5e27 m-3` all match the script.
+
+**Commits (user, 2026-11-11): do not add Claude as author or co-author.** Commit
+as the configured git user with no `Co-Authored-By` trailer. Push access to
+`origin` works over HTTPS.
+
+Things found that the authors should know:
+
+- **The fixed W concentration of the thesis is not sustainable by diffusion.**
+  The network needs up to 2.5e7 m-2 s-1 from the tungsten; 1 um of tungsten at
+  340 K and 2.3e7 m-3 supplies 4.4e3. With real diffusivity the interface takes
+  about 1e7 s to fill, not 2630 s. This is what coupling to the bulk adds over
+  the 0D model, and is shown dashed in `w_cu_network.pdf`.
+- **The thesis's Arrhenius fit** (7.84e12 Hz, 1.01 eV) lies about 20 times above
+  its own three tabulated times to steady state. `parameters.py` uses that
+  attempt frequency for the three-state reduction, so the thin-layer sweep
+  inherits the inconsistency. Refit the three-state model to the network before
+  quoting the sweep.
+- Our steady values sit 3 to 19 % above the thesis tables, consistently. Likely
+  rounding of the tabulated barriers (0.001 eV is 3.5 % at 340 K).
+- The slight overshoot in the permeator start-up near one transit time is
+  unexplained: physical (an empty wall extracts more) or numerical. Check with
+  a finer mesh before discussing it.
+
+Still open:
+
+- Application 2 keeps all three figures for now (user, 2026-11-11: "we can
+  always cut later"). It is over its one-page budget.
+- Citations to add through Zotero, not by hand: Humrickhouse and Merrill 2015
+  (DOI 10.13182/FST14-941), Rader et al. 2018 (DOI
+  10.1080/00295450.2018.1431505), and the Sherwood correlation behind Rader's
+  Table III, which the paper does not name.
+- Unit convention (Sec. 3): the applications use a volumetric manifold variable
+  with factor 2/r (liquid in a tube) and an areal one with no factor (interface,
+  grain boundary).
+- `SurfaceFlux` of a bulk species on a manifold was inaccurate (up to 38 %) on a
+  coarse mesh where the exchange varied sharply near an inlet. Check before
+  quoting such an export.
+
 ## The FESTIM implementation this paper describes
 
 **Merged into `main`**, not a feature branch, and released in \FESTIM{} 2.2
-(local tag `v2.2-rc.1`). Local clone: `/home/jdark/repos/FESTIM`; use
+(tag `v2.2`, commit `5620e8f5`, identical to `origin/main` on 2026-11-11; on conda-forge and PyPI as `festim=2.2`). Local clone: `/home/jhdark/repos/FESTIM`; use
 `git show origin/main:<path>` and `git fetch` before trusting what is checked
 out. The work landed over several PRs, the codim ones being festim-dev/FESTIM
 **#1250** (a manifold adjacent to more than two volumes, plus the polycrystal
@@ -160,31 +253,68 @@ own verification cases, and worth citing as the test suite behind it:
 | `test/system_tests/test_codim1_coupling.py` | 2D and 3D tilted coupling, advection, transient time integration, time-dependent and reaction sources, `ImplicitSpecies` |
 | `test/system_tests/test_codim1_interface.py` | interior manifolds against analytical solutions, particle conservation, declaration-order independence, 3D tilted MMS, and the raises |
 | `test/system_tests/test_codim1_boundary.py` | Dirichlet on manifold ends vs analytical, pipe inlet concentration |
+| `test/system_tests/test_codim1_coordinates.py` | cylindrical and spherical coordinates: point manifolds (`dim=0`) in 1D radial meshes, lines in axisymmetric meshes |
 | `test/system_tests/test_codim1_exports.py` | derived quantities and fluxes on exterior and interior manifolds, flux balance, outlet flux under advection |
 | `test/system_tests/test_codim1_polycrystal.py` | grain-boundary networks: three grains against a series chain, one measure id per side, triple junctions, a grain blocked off from the network |
 | `test/test_codim1_subdomain.py` | unit level: `dim`/codim validation, facet tagging, id-namespace clashes, `solution_on` resolution, manifold boundaries |
 
 **Check `main` before claiming any capability in the paper.** The list above is
 a snapshot taken 2026-09-08, not a contract.
+Rechecked against `v2.2` on 2026-11-11: all 106 codim tests pass in `codim-env`
+(FESTIM 2.2, DOLFINx 0.11.0). Also in 2.2 and not listed above: cylindrical and
+spherical coordinate systems on manifolds, `OutflowBC` on a manifold end, drift
+terms assembled in divergence form (an untagged manifold end is a closed end),
+and codim-2 `SurfaceSubdomain`s for the boundary of a manifold. Most
+interior-manifold and all polycrystal tests are marked serial only.
 
 ## Related repos on this machine
 
 | Path | What it is |
 |---|---|
-| `/home/jdark/repos/FESTIM` | FESTIM source. The implementation this paper describes is on `main` (FESTIM 2.2). Use `git show origin/main:<path>`; don't switch branches. The stale `rem/codim` branch is superseded. |
-| `/home/jdark/repos/mixed-dim` | Scratch prototypes for mixed-dimensional assembly (`mixed_domain.py`, `mwe.py`, plus `.bp` outputs). Predates the FESTIM branch; provenance, not a source to cite. |
-| `/home/jdark/repos/interface-models` | The companion **paper** repo (kinetic interface models, Ni/FLiBe; `origin` = festim-dev/interface-models). Same layout as here, and the source of this repo's preamble and working rules. Its `scripts/` is the companion's simulation code. |
-| `/home/jdark/repos/papers/Co-Dimensional-modelling-in-FESTIM` | Here. |
+| `/home/jhdark/repos/FESTIM` | FESTIM source. The implementation is at tag `v2.2`. Use `git show v2.2:<path>`; don't switch branches, the clone is usually on an unrelated one. |
+| `/home/jhdark/repos/Co-Dimensional-modelling-in-FESTIM` | Here. |
 
-Environment: conda env `codim-env`, recipe in `scripts/environment.yml`. It does
-not exist on this machine yet, and the extra `pip install` for the FESTIM branch
-is not pinned yet either; record both in `scripts/README.md` once they are.
+The `interface-models` and `mixed-dim` repos an earlier version of this file
+listed are not on this machine and are not needed: everything is reproducible
+from FESTIM 2.2. The companion paper is available as
+`paper_references/interface_models.pdf`.
 
-Plotting uses `morethemes` (`mt.set_theme("urban")`) and the palette
-`#1a4848, #f7b000, #f46036, #c9f2c7, #aceca1`, top and right spines removed.
-Match that style for any new figure.
+Environment: conda env `codim-env`, recipe in `scripts/environment.yml`, pinned
+to `festim=2.2` from conda-forge with no extra `pip install`. It exists on this
+machine; run scripts with `conda run -n codim-env python ...`. To read or run
+the FESTIM tests at the release, use `git show v2.2:<path>` or `git archive v2.2
+test` into a scratch directory: the local clone is usually checked out on an
+unrelated branch.
+
+Plotting goes through `scripts/common.py` (`from common import *`): morethemes
+"urban", the palette `#1a4848, #f7b000, #f46036, #c9f2c7, #aceca1`, white
+background, top and right spines removed, widths `COL1`/`COL2` for the `5p`
+layout. Use it for any new figure.
+
+Practical notes, learnt 2026-11-11:
+
+- `conda run -n codim-env python - <<EOF` prints nothing: write the snippet to a
+  file. For long runs use `conda run --no-capture-output ... python -u` and
+  `OMP_NUM_THREADS=1`, and send output to a log.
+- To look at a figure, convert the PDF to PNG with PyMuPDF and Read the PNG.
+  There is no `pdftotext`; PDF text is extracted with `pypdf`. Neither is in
+  `codim-env`: install them with `pip install --target` into the scratchpad.
+- `np.isclose` in a locator has a default tolerance of about `1e-8 + 1e-5 |x|`.
+  On a graded mesh with smaller cells it tags several vertices as the manifold.
+  Pass `rtol=0, atol=...` explicitly.
+- A FESTIM surface subdomain must touch exactly one volume subdomain. With one
+  subdomain per grain, the loaded and exit faces need one surface per grain.
+- Supplying gmsh tags: set `model.volume_meshtags` and `model.facet_meshtags`
+  after construction, and declare subdomains with ids only. The manifold id goes
+  in the facet tags.
+- Form compilation grows quickly with the number of subdomains: 30 grains take
+  about a minute on first run and are cached afterwards.
 
 ## Working rules
+
+**Update this file at the end of every engagement** (state of the work, what was
+learnt, what is open), and `scripts/README.md` with it. Helper files that save
+time later are welcome without asking.
 
 ### Sources and numbers
 
@@ -200,7 +330,8 @@ Match that style for any new figure.
   or a source the user supplies. Every number quoted in the paper should be
   traceable to a script.
 - **Do not describe a FESTIM capability without checking the branch.** The
-  implementation is unmerged and moving; read the source or the test, then write.
+  paper describes the 2.2 release; read the source or the test at tag `v2.2`,
+  then write.
 
 ### LaTeX conventions
 
