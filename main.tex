@@ -284,11 +284,16 @@
 % ---------------------------------------------------------------
 
 \begin{itemize}
-    \item Grain boundaries act as short-circuit paths, with a diffusivity orders of magnitude above the lattice value and a solubility of their own. \TODO{cite: Fisher model, Harrison A/B/C regimes, short-circuit diffusion data}
+    \item Grain boundaries act as short-circuit paths, with a diffusivity orders of magnitude above the lattice value and a solubility of their own. 
+    \begin{itemize}
+        \item Harrison \cite {harrison_diffusion_1961} summarizes the ``A'', ``B'' and ``C'' regimes nicely, with Hart \cite{hart_diffusion_1957} describing regime A and the Fisher model \cite{fisher_grain_boundary_1951} describing regime B
+        \item See this \href{https://www.nist.gov/system/files/documents/mml/msed/thermodynamics_kinetics/LMC-talk-San-Diego-TMS-GEM-prime.pdf}{this slide deck} for more detail. 
+    \end{itemize}
+    \item \TODO{cite: short-circuit diffusion data}
     \item Model: every grain is its own volume subdomain, so the concentration is free to jump from one grain to the next, and the whole boundary network is one manifold subdomain adjacent to all of them.
     \item The exchange rate is a property of the (network, grain) pair, so grains may exchange at different rates without splitting the network.
     \item Triple junctions are handled by giving each adjacent grain its own integral, as described in Sec.~\ref{sec:method:weak}.
-    \item Geometries from Voronoi tessellations: a 2D polycrystal with 1D boundaries, and a 3D polycrystal with 2D boundaries. \TODO{cite the generator, e.g. Neper or scipy}
+    \item Geometries from Voronoi tessellations: a 2D polycrystal with 1D boundaries, and a 3D polycrystal with 2D boundaries using SciPy \cite{virtanen_scipy_2020}
     \item \TODO{Material and parameters. Tungsten is the obvious choice given the fusion framing, but the lattice and boundary transport properties must be sourced, not assumed.}
 \end{itemize}
 
@@ -372,5 +377,4 @@
 \bibliography{references}
 % ===============================================================
 
-\lipsum[8]
 \end{document}
