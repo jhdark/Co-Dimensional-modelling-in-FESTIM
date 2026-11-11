@@ -12,10 +12,14 @@ It was seeded from the companion *interface models* paper
 so it inherits that paper's preamble, styling, working rules and bibliography.
 **All of that paper's content has been removed.** What is left:
 
-- `main.tex`: the whole manuscript. Currently a **detailed outline**: every
-  section has its equations (15, all labelled), specific bullets with the
-  numbers from the scripts, and its figures. Bullets are one sentence per line.
-  No prose yet. `lipsum` is loaded for filler while drafting.
+- `main.tex`: the whole manuscript. A **full first draft in prose** since
+  2026-11-11: abstract, keywords and every section, about 3650 words, 15
+  equations, 7 figures, 1 table and 1 code listing. It has **never been
+  compiled** (no TeX here): expect layout problems on first build in Overleaf,
+  most likely the table width, the listing width and float placement of six
+  full-width figures. Open `\TODO{}` and `\VERIFY{}` marks are listed below.
+  The empty appendix and the trailing `\lipsum[8]` were removed; the `lipsum`
+  package is still loaded.
 - `references.bib`: bibliography, inherited whole from the companion paper.
   **Read the plain-text VERIFICATION NOTICE blocks (around lines 80 and 100)
   before touching it.** Several entries were assembled from web search or pulled
@@ -125,8 +129,8 @@ Still open:
 
 ## Where the work stands
 
-Updated 2026-11-11 (third session: equations and specific bullets written into
-`main.tex`, one commit per section). Seven draft figures exist and are included
+Updated 2026-11-11 (fourth session: full prose draft of `main.tex`, one commit
+per section). Seven draft figures exist and are included
 in `main.tex` with placeholder captions. All numbers below come from the CSVs
 in `scripts/`.
 
@@ -199,6 +203,36 @@ Still open:
 - `SurfaceFlux` of a bulk species on a manifold was inaccurate (up to 38 %) on a
   coarse mesh where the exchange varied sharply near an inlet. Check before
   quoting such an export.
+
+## State of the draft
+
+What the first draft still needs, in rough order:
+
+1. **A build.** Compile in Overleaf and fix layout. Check the page count
+   against the 6 to 7 page budget: Application 2 has three full-width figures.
+2. **Citations not in `references.bib`**, each marked `\TODO{cite ...}` in place:
+   Rader et al. 2018 and Humrickhouse and Merrill 2015 (Application 1); Hart and
+   Fisher (homogenisation, grain boundaries); the mixed-dimensional literature
+   (D'Angelo and Quarteroni; Boon, Nordbotten and Yotov; Kuchta et al.); scifem
+   and the Dokken assembly script; the companion paper; the Silva-Solis thesis.
+   Add through Zotero, never by hand.
+3. **`\VERIFY{}` items**: the three-state W/Cu reduction and its attempt
+   frequency; the 3 to 19 % offset against the thesis tables; solubility units
+   and FLiBe inlet concentration of the permeator table; the start-up overshoot;
+   serial-only status; the "not available elsewhere" claim.
+4. **Numbers still missing**: cell counts and solve times for the cost
+   statements (Applications 1 and 3); an error measure for Be/BeO against MD;
+   representative feature widths in the motivation.
+5. **Style pass.** The draft follows the rules in this file mechanically
+   (checked: no sentence over 25 words, one sentence per line, no em dashes, no
+   "rather than", no "closure"). It uses no "we" at all, following `STYLE.md`
+   over the once-per-200-words guidance here; the authors should say which they
+   want. Re-read for btw points and AI tells before circulating.
+
+A reusable checker lives only in the session scratchpad and is not in the repo.
+If prose checks are needed again, rewrite it: count words per line after
+stripping maths, citations and macros, and flag lines over 25 words or holding
+two sentences.
 
 ## The FESTIM implementation this paper describes
 
