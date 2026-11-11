@@ -314,11 +314,12 @@
 % ---------------------------------------------------------------
 
 \begin{itemize}
-    \item Verification: against a model that resolves the coolant as a full fluid subdomain, and against the analytical plug-flow solution. \TODO{which of the two, or both}
-    \item Sweep: outlet concentration and total pickup against flow velocity, against the mass-transfer coefficient, and against wall thickness. \TODO{confirm the sweep variables}
-    \item Identify where the plug-flow reduction breaks down, i.e. where the resolved model and the manifold model part company. This is the result that makes the section an argument and not a demonstration.
-    \item Cost comparison: cells and solve time against the resolved model.
-    \item Contrast with the usual practice of coupling a component model to a separate system code, where the exchange is explicit and the time steps are not shared.
+    \item Steady state: the efficiency along the tube follows the analytical solution within \num{2e-5} for both cases (see Fig.~\ref{fig:coolant}a).
+    \item At the outlet the efficiency is \num{0.690} for Pb-17Li and \num{0.415} for FLiBe, equal to the published values.
+    \item The FLiBe case is limited by mass transfer in the liquid, so it tests the film term more than the nonlinear equilibrium. \TODO{consider a wall-limited variant}
+    \item Transient: start-up from a tube full of liquid at $c_\mathrm{in}$ and an empty wall. The outlet efficiency settles after about one transit time $L/u$ (see Fig.~\ref{fig:coolant}b). \VERIFY{the slight overshoot, on a finer mesh}
+    \item The analytical solution has no transient and no axial variation of the wall. Both come at no extra cost here, since the wall is resolved and the two fields share a time step.
+    \item Cost: the liquid adds one degree of freedom per wall facet. \TODO{number of cells and solve time}
 \end{itemize}
 
 \begin{figure*}
