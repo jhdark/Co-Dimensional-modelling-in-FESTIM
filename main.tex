@@ -109,12 +109,16 @@
     \item Components contain features far thinner than themselves: grain boundaries, material interfaces, cracks, coolant channels.
     \item These features often control the transport, and resolving them in the mesh drives the cell count and the aspect ratio.
     \item However, the usual treatments each discard something: a homogenised property loses the state of the feature, an algebraic interface condition loses its inventory and its kinetics, and an external system code loses the monolithic coupling.
-    \item \KEY{Contribution: a co-dimensional description in \FESTIM{}. The feature is a subdomain of one dimension less than the mesh, called a manifold, which carries its own transport equation and exchanges a flux with the bulk.}
-    \item Released in \FESTIM{} 2.2, open source, and covered by the continuous integration suite. \VERIFY{release version and date at submission}
+    \item \KEY{Contribution: a co-dimensional description in \FESTIM{}.
+        The feature is a subdomain of one dimension less than the mesh, called a manifold, which carries its own transport equation and exchanges a flux with the bulk.}
+    \item Released in \FESTIM{} 2.2, open source, and covered by the continuous integration suite.
+        \VERIFY{release version and date at submission}
     \item Verification: second-order convergence against a manufactured solution, in 2D and on a tilted manifold in 3D.
     \item Three applications, each against a reference: a permeator tube with the flowing liquid on a manifold, against an analytical solution; interfaces carrying their own inventory, against molecular dynamics at Be/BeO~\cite{hodille_molecular_2022} and a rate-equation model at W/Cu~\cite{silva-solis_hydrogen_2026}; a grain-boundary network in a Voronoi polycrystal.
-    \item Relation to the companion paper: there an interface is a reactive surface with no stored inventory, here it has its own state. \TODO{cite the companion once it has a number}
-    \item All scripts and data are available in a public repository. \TODO{URL and DOI}
+    \item Relation to the companion paper: there an interface is a reactive surface with no stored inventory, here it has its own state.
+        \TODO{cite the companion once it has a number}
+    \item All scripts and data are available in a public repository.
+        \TODO{URL and DOI}
 \end{itemize}
 
 % ===============================================================
@@ -123,14 +127,21 @@
 % ===============================================================
 
 \begin{itemize}
-    \item Scale separation: a grain boundary or an interfacial plane is of atomic width, inside components of millimetre scale. \TODO{representative widths with citations}
+    \item Scale separation: a grain boundary or an interfacial plane is of atomic width, inside components of millimetre scale.
+        \TODO{representative widths with citations}
     \item A mesh that resolves such a feature pays for it along its whole extent, in cell count, aspect ratio and conditioning.
-    \item \textbf{Homogenisation.} The feature is folded into an effective diffusivity. Its own concentration is lost, and so are the inventory it holds and the flux it carries. \TODO{cite Hart, Fisher}
-    \item \textbf{Algebraic interface condition.} Continuity of chemical potential is imposed on the two bulk concentrations. The interface has no inventory and no time scale, which molecular dynamics at Be/BeO~\cite{hodille_molecular_2022} and rate-equation modelling at W/Cu~\cite{silva-solis_hydrogen_2026} both contradict.
-    \item \textbf{External coupling.} A flowing fluid is handed to a separate system code and coupled through boundary data~\cite{meschini_modeling_2023}. The coupling is explicit and the time steps are not shared.
+    \item \textbf{Homogenisation.} The feature is folded into an effective diffusivity.
+        Its own concentration is lost, and so are the inventory it holds and the flux it carries.
+        \TODO{cite Hart, Fisher}
+    \item \textbf{Algebraic interface condition.} Continuity of chemical potential is imposed on the two bulk concentrations.
+        The interface has no inventory and no time scale, which molecular dynamics at Be/BeO~\cite{hodille_molecular_2022} and rate-equation modelling at W/Cu~\cite{silva-solis_hydrogen_2026} both contradict.
+    \item \textbf{External coupling.} A flowing fluid is handed to a separate system code and coupled through boundary data~\cite{meschini_modeling_2023}.
+        The coupling is explicit and the time steps are not shared.
     \item \KEY{A manifold keeps what these discard: its own field, transport terms, boundary conditions and exports, solved together with the bulk in one nonlinear system.}
-    \item Mixed-dimensional coupling is established in other fields, for instance flow in fractured porous media. \TODO{cite: D'Angelo and Quarteroni; Boon, Nordbotten and Yotov; Kuchta et al.}
-    \item What is new here is its availability in a hydrogen transport code, alongside trapping and multi-species reactions. \VERIFY{that no other H-transport code offers this}
+    \item Mixed-dimensional coupling is established in other fields, for instance flow in fractured porous media.
+        \TODO{cite: D'Angelo and Quarteroni; Boon, Nordbotten and Yotov; Kuchta et al.}
+    \item What is new here is its availability in a hydrogen transport code, alongside trapping and multi-species reactions.
+        \VERIFY{that no other H-transport code offers this}
 \end{itemize}
 
 % TODO(structure): section title. Alternatives: "Methodology",
@@ -155,7 +166,8 @@
     \label{eq:bulk}
 \end{equation}
 \begin{itemize}
-    \item $c_i$ is the mobile concentration in $\Omega_i$, $D_i$ the diffusivity and $S_i$ a source. Trapping and reactions are available as usual.
+    \item $c_i$ is the mobile concentration in $\Omega_i$, $D_i$ the diffusivity and $S_i$ a source.
+        Trapping and reactions are available as usual.
     \item Manifold equation, the same balance written with the tangential operator:
 \end{itemize}
 \begin{equation}
@@ -168,7 +180,8 @@
 \end{equation}
 \begin{itemize}
     \item $c_\Gamma$ is the concentration on the manifold, $D_\Gamma$ its diffusivity, $\mathbf{u}$ a drift velocity, $\mathbf{n}$ the unit normal to $\Gamma$ and $J_i$ the flux received from $\Omega_i$.
-    \item The sum runs over the bulk subdomains adjacent to $\Gamma$. Only the tangential part of $\mathbf{u}$ acts, so an ambient velocity can be supplied as it is.
+    \item The sum runs over the bulk subdomains adjacent to $\Gamma$.
+        Only the tangential part of $\mathbf{u}$ acts, so an ambient velocity can be supplied as it is.
     \item Coupling: the flux that enters the manifold leaves the bulk,
 \end{itemize}
 \begin{equation}
@@ -176,11 +189,15 @@
     \label{eq:coupling}
 \end{equation}
 \begin{itemize}
-    \item $\mathbf{n}_i$ is the normal pointing out of $\Omega_i$. Without an algebraic condition the bulk concentrations on the two sides of $\Gamma$ are independent, and are linked only through $c_\Gamma$.
-    \item The exchange law $J_i$ is supplied by the user, one per adjacent subdomain. The simplest is linear, $J_i = k_i \left( c_i - c_\Gamma \right)$; the applications use mass-transfer, trapping and detrapping laws.
-    \item \paragraph{Units} $J_i$ is a flux per unit area of $\Gamma$. The factor $\alpha$ converts it to the units of $c_\Gamma$, and is a modelling choice.
+    \item $\mathbf{n}_i$ is the normal pointing out of $\Omega_i$.
+        Without an algebraic condition the bulk concentrations on the two sides of $\Gamma$ are independent, and are linked only through $c_\Gamma$.
+    \item The exchange law $J_i$ is supplied by the user, one per adjacent subdomain.
+        The simplest is linear, $J_i = k_i \left( c_i - c_\Gamma \right)$; the applications use mass-transfer, trapping and detrapping laws.
+    \item \textbf{Units.} $J_i$ is a flux per unit area of $\Gamma$.
+        The factor $\alpha$ converts it to the units of $c_\Gamma$, and is a modelling choice.
     \item $\alpha = 1$ for an areal density (an interfacial plane, a grain boundary); $\alpha = 1/\lambda$ for a volumetric concentration in a layer of thickness $\lambda$; $\alpha = P/A$ for a channel of wetted perimeter $P$ and flow area $A$.
-    \item \FESTIM{} does not impose $\alpha$. \KEY{State the convention with each application: $2/r_\mathrm{i}$ in Sec.~\ref{sec:app:pfr}, 1 in Secs.~\ref{sec:app:interface} and~\ref{sec:app:gb}.}
+    \item \FESTIM{} does not impose $\alpha$.
+        \KEY{State the convention with each application: $2/r_\mathrm{i}$ in Sec.~\ref{sec:app:pfr}, 1 in Secs.~\ref{sec:app:interface} and~\ref{sec:app:gb}.}
     \item Conservation: with Eqs.~\ref{eq:manifold} and~\ref{eq:coupling} the total inventory $\sum_i \int_{\Omega_i} c_i + \alpha^{-1} \int_\Gamma c_\Gamma$ changes only through sources and outer boundaries.
     \item Limit: for fast exchange and negligible capacity on $\Gamma$, $c_\Gamma$ is slaved to the bulk and an algebraic interface condition is recovered (shown numerically in Sec.~\ref{sec:app:interface:results}).
 \end{itemize}
@@ -198,7 +215,8 @@
 % ---------------------------------------------------------------
 
 \begin{itemize}
-    \item One function space per subdomain, each on its own submesh: cells for $\Omega_i$, facets for $\Gamma$. First-order Lagrange elements throughout.
+    \item One function space per subdomain, each on its own submesh: cells for $\Omega_i$, facets for $\Gamma$.
+        First-order Lagrange elements throughout.
     \item Weak form, with test functions $v_i$ and $w$, and no drift on the outer boundary:
 \end{itemize}
 \begin{equation}
@@ -210,12 +228,15 @@
     \label{eq:weak:manifold}
 \end{equation}
 \begin{itemize}
-    \item The drift term is in divergence form. A manifold end with no condition therefore carries zero total flux, and an outlet needs an explicit outflow condition.
+    \item The drift term is in divergence form.
+        A manifold end with no condition therefore carries zero total flux, and an outlet needs an explicit outflow condition.
     \item The two kinds of integral in Eq.~\ref{eq:weak:manifold} need different integration domains: the tangential terms are integrated on the submesh of $\Gamma$, the exchange terms on the facets of the parent mesh, where the bulk fields can be evaluated.
     \item \textsc{dolfinx}~\cite{baratta_dolfinx_2023} compiles one integration domain per form, so the residual is split into groups that are accumulated into one vector and one matrix.
     \item The system stays monolithic: one Newton solve and one Jacobian per time step, with no sub-iteration between the manifold and the bulk.
-    \item Inside the mesh, $\Gamma$ is integrated over interior facets and each exchange term is restricted to one side. One exchange is declared per adjacent subdomain.
-    \item Beyond two adjacent subdomains there is no consistent pair of sides, since past a triple junction the manifold separates a different pair. Each adjacent subdomain is then given its own integral, on which it is the restricted side.
+    \item Inside the mesh, $\Gamma$ is integrated over interior facets and each exchange term is restricted to one side.
+        One exchange is declared per adjacent subdomain.
+    \item Beyond two adjacent subdomains there is no consistent pair of sides, since past a triple junction the manifold separates a different pair.
+        Each adjacent subdomain is then given its own integral, on which it is the restricted side.
     \item Time integration is backward Euler, as in the rest of \FESTIM{}.
     \item \TODO{cite scifem, used for the interface data; acknowledge the assembly callbacks adapted from J. S. Dokken}
 \end{itemize}
@@ -226,11 +247,13 @@
 % ---------------------------------------------------------------
 
 \begin{itemize}
-    \item A manifold is a \texttt{VolumeSubdomain} whose \texttt{dim} is one less than that of the mesh, located by a function or by a facet tag. \TODO{code listing, ten lines: one manifold, one species, one exchange}
+    \item A manifold is a \texttt{VolumeSubdomain} whose \texttt{dim} is one less than that of the mesh, located by a function or by a facet tag.
+        \TODO{code listing, ten lines: one manifold, one species, one exchange}
     \item The exchange of Eq.~\ref{eq:coupling} is written twice: a \texttt{ParticleFluxBC} on the bulk species and a \texttt{ParticleSource} on the manifold species, each reading both concentrations.
     \item Available on a manifold: several species, reactions between them, trapping, drift terms, fixed concentration and outflow conditions on its ends, initial conditions.
     \item Exports: totals and averages over the manifold, the exchange flux on its facets, and the flux through its ends.
-    \item Cartesian, cylindrical and spherical coordinates are supported. In a 1D mesh the manifold is a point.
+    \item Cartesian, cylindrical and spherical coordinates are supported.
+        In a 1D mesh the manifold is a point.
     \item A pair of subdomains is separated either by an algebraic interface condition or by a manifold, never both.
     \item Limitations: codimension one only; resolution along the manifold is inherited from the parent mesh; drift-dominated transport is not stabilised.
 \end{itemize}
@@ -249,10 +272,12 @@
     \label{eq:mms}
 \end{equation}
 \begin{itemize}
-    \item The exchange flux $J = D \cos \left( \pi \xi_1 \right)$ varies along $\Gamma$, so the coupling is exercised. Sources follow from Eqs.~\ref{eq:bulk} and~\ref{eq:manifold}.
+    \item The exchange flux $J = D \cos \left( \pi \xi_1 \right)$ varies along $\Gamma$, so the coupling is exercised.
+        Sources follow from Eqs.~\ref{eq:bulk} and~\ref{eq:manifold}.
     \item In 3D the cube is rotated so that $\Gamma$ is aligned with no coordinate axis, which exercises Eq.~\ref{eq:gradG}.
     \item Result: the relative $L^2$ error of both fields decreases at second order, with fitted orders of \num{2.00} in 2D and \num{1.97} in 3D (see Fig.~\ref{fig:convergence}).
-    \item The \FESTIM{} test suite additionally covers conservation across an interior manifold, independence from the order of declaration, triple junctions and radial coordinates. \TODO{name the test files in the data availability section}
+    \item The \FESTIM{} test suite additionally covers conservation across an interior manifold, independence from the order of declaration, triple junctions and radial coordinates.
+        \TODO{name the test files in the data availability section}
 \end{itemize}
 
 \begin{figure}
@@ -273,8 +298,10 @@
 % ---------------------------------------------------------------
 
 \begin{itemize}
-    \item Case: a permeator tube. Tritium dissolved in a flowing liquid permeates through the tube wall into vacuum.
-    \item The wall is an axisymmetric bulk subdomain. The liquid is not meshed: it is a manifold on the inner surface, at radius $r_\mathrm{i}$, carrying the cross-section averaged concentration $c_\mathrm{f}$.
+    \item Case: a permeator tube.
+        Tritium dissolved in a flowing liquid permeates through the tube wall into vacuum.
+    \item The wall is an axisymmetric bulk subdomain.
+        The liquid is not meshed: it is a manifold on the inner surface, at radius $r_\mathrm{i}$, carrying the cross-section averaged concentration $c_\mathrm{f}$.
     \item Plug-flow balance, Eq.~\ref{eq:manifold} with $\alpha = 2/r_\mathrm{i}$ and a flux leaving the liquid:
 \end{itemize}
 \begin{equation}
@@ -294,9 +321,11 @@
     \label{eq:pfr:eq}
 \end{equation}
 \begin{itemize}
-    \item $K_\mathrm{s}$ and $K_\mathrm{l}$ are Sieverts solubilities of the wall and the liquid, and $K_\mathrm{H}$ a Henry solubility. The second law is nonlinear in the wall concentration.
+    \item $K_\mathrm{s}$ and $K_\mathrm{l}$ are Sieverts solubilities of the wall and the liquid, and $K_\mathrm{H}$ a Henry solubility.
+        The second law is nonlinear in the wall concentration.
     \item Conditions: fixed concentration $c_\mathrm{in}$ at the inlet, outflow at the outlet, zero concentration on the outer surface of the wall.
-    \item Two published cases: Pb-17Li in a RAFM steel tube and FLiBe in a nickel tube. \TODO{cite Rader et al. 2018 and Humrickhouse and Merrill 2015; parameter table}
+    \item Two published cases: Pb-17Li in a RAFM steel tube and FLiBe in a nickel tube.
+        \TODO{cite Rader et al. 2018 and Humrickhouse and Merrill 2015; parameter table}
     \item Reference: for a Sieverts liquid the steady extraction efficiency $\eta = 1 - c_\mathrm{f}(L)/c_\mathrm{in}$ of a tube of length $L$ and inner diameter $d$ is
 \end{itemize}
 \begin{equation}
@@ -304,7 +333,9 @@
     \label{eq:pfr:eta}
 \end{equation}
 \begin{itemize}
-    \item $D_\mathrm{s}$ is the diffusivity in the wall and $d_\mathrm{o}$ the outer diameter. The Henry case has an analytical solution in terms of the Lambert $W$ function. \TODO{cite}
+    \item $D_\mathrm{s}$ is the diffusivity in the wall and $d_\mathrm{o}$ the outer diameter.
+        The Henry case has an analytical solution in terms of the Lambert $W$ function.
+        \TODO{cite}
     \item \VERIFY{solubility units and the FLiBe inlet concentration are inferred from the published regime number}
 \end{itemize}
 
@@ -316,10 +347,15 @@
 \begin{itemize}
     \item Steady state: the efficiency along the tube follows the analytical solution within \num{2e-5} for both cases (see Fig.~\ref{fig:coolant}a).
     \item At the outlet the efficiency is \num{0.690} for Pb-17Li and \num{0.415} for FLiBe, equal to the published values.
-    \item The FLiBe case is limited by mass transfer in the liquid, so it tests the film term more than the nonlinear equilibrium. \TODO{consider a wall-limited variant}
-    \item Transient: start-up from a tube full of liquid at $c_\mathrm{in}$ and an empty wall. The outlet efficiency settles after about one transit time $L/u$ (see Fig.~\ref{fig:coolant}b). \VERIFY{the slight overshoot, on a finer mesh}
-    \item The analytical solution has no transient and no axial variation of the wall. Both come at no extra cost here, since the wall is resolved and the two fields share a time step.
-    \item Cost: the liquid adds one degree of freedom per wall facet. \TODO{number of cells and solve time}
+    \item The FLiBe case is limited by mass transfer in the liquid, so it tests the film term more than the nonlinear equilibrium.
+        \TODO{consider a wall-limited variant}
+    \item Transient: start-up from a tube full of liquid at $c_\mathrm{in}$ and an empty wall.
+        The outlet efficiency settles after about one transit time $L/u$ (see Fig.~\ref{fig:coolant}b).
+        \VERIFY{the slight overshoot, on a finer mesh}
+    \item The analytical solution has no transient and no axial variation of the wall.
+        Both come at no extra cost here, since the wall is resolved and the two fields share a time step.
+    \item Cost: the liquid adds one degree of freedom per wall facet.
+        \TODO{number of cells and solve time}
 \end{itemize}
 
 \begin{figure*}
@@ -340,7 +376,8 @@
 % ---------------------------------------------------------------
 
 \begin{itemize}
-    \item The companion paper treats an interface as a reactive surface with no stored inventory. Here the interfacial plane is a manifold between two materials, with $\alpha = 1$: $c_\Gamma$ is an areal density on $n_\Gamma$ sites, with coverage $\theta = c_\Gamma / n_\Gamma$.
+    \item The companion paper treats an interface as a reactive surface with no stored inventory.
+        Here the interfacial plane is a manifold between two materials, with $\alpha = 1$: $c_\Gamma$ is an areal density on $n_\Gamma$ sites, with coverage $\theta = c_\Gamma / n_\Gamma$.
     \item Exchange with material $i$, a trapping jump from the bulk and a detrapping jump back:
 \end{itemize}
 \begin{equation}
@@ -360,11 +397,17 @@
     \label{eq:interface:lte}
 \end{equation}
 \begin{itemize}
-    \item Equation~\ref{eq:interface:lte} is the algebraic condition the manifold reduces to. It keeps neither the inventory $c_\Gamma$ nor the time needed to fill it.
-    \item \textbf{Be/BeO.} Molecular dynamics of deuterium at two interfaces, Be/BeO(0001) and Be/BeO(000$\bar{1}$), at \qtylist{750;1000;1250}{\kelvin}~\cite{hodille_molecular_2022}. No exchange is observed on the BeO side, so $J_2 = 0$. Rates, $n_\Gamma = \qty{e20}{\per\metre\squared}$ and $c_\mathrm{Be} = \qty{5e27}{\per\metre\cubed}$ are those of the reference.
-    \item \textbf{W/Cu, multi-site.} The rate-equation model of Silva-Sol\'is~\cite{silva-solis_hydrogen_2026}: fourteen sites across the interface joined by three diffusion paths, with barriers from density functional theory. \VERIFY{cite the thesis or the paper for the tables used}
-    \item Here the fourteen sites are fourteen species on one manifold, and each jump between two sites is a pair of opposite sources. The W-side concentration is held fixed, as in the reference.
-    \item \textbf{W/Cu, bilayer.} The path is reduced to Eq.~\ref{eq:interface:J}, and the manifold is placed between a tungsten and a copper layer in 1D, against Eq.~\ref{eq:interface:lte} imposed as an interface condition. \VERIFY{the reduction is ours; refit its attempt frequency to the multi-site model}
+    \item Equation~\ref{eq:interface:lte} is the algebraic condition the manifold reduces to.
+        It keeps neither the inventory $c_\Gamma$ nor the time needed to fill it.
+    \item \textbf{Be/BeO.} Molecular dynamics of deuterium at two interfaces, Be/BeO(0001) and Be/BeO(000$\bar{1}$), at \qtylist{750;1000;1250}{\kelvin}~\cite{hodille_molecular_2022}.
+        No exchange is observed on the BeO side, so $J_2 = 0$.
+        Rates, $n_\Gamma = \qty{e20}{\per\metre\squared}$ and $c_\mathrm{Be} = \qty{5e27}{\per\metre\cubed}$ are those of the reference.
+    \item \textbf{W/Cu, multi-site.} The rate-equation model of Silva-Sol\'is~\cite{silva-solis_hydrogen_2026}: fourteen sites across the interface joined by three diffusion paths, with barriers from density functional theory.
+        \VERIFY{cite the thesis or the paper for the tables used}
+    \item Here the fourteen sites are fourteen species on one manifold, and each jump between two sites is a pair of opposite sources.
+        The W-side concentration is held fixed, as in the reference.
+    \item \textbf{W/Cu, bilayer.} The path is reduced to Eq.~\ref{eq:interface:J}, and the manifold is placed between a tungsten and a copper layer in 1D, against Eq.~\ref{eq:interface:lte} imposed as an interface condition.
+        \VERIFY{the reduction is ours; refit its attempt frequency to the multi-site model}
     \item \TODO{parameter table: rates, site densities, diffusivities, with sources}
 \end{itemize}
 
@@ -374,15 +417,24 @@
 % ---------------------------------------------------------------
 
 \begin{itemize}
-    \item \textbf{Be/BeO.} The interface concentration follows the molecular dynamics at both interfaces and all three temperatures (see Fig.~\ref{fig:bebeo}). \TODO{quantify the error}
-    \item This case is a single rate equation. Its value is that the rates fitted to molecular dynamics enter a component-scale model unchanged.
-    \item \textbf{W/Cu, multi-site.} Steady concentrations agree with the reference within \qtyrange{3}{19}{\percent} over ten orders of magnitude (see Fig.~\ref{fig:wcunetwork}a). \VERIFY{origin of the offset, probably rounding of the tabulated barriers}
+    \item \textbf{Be/BeO.} The interface concentration follows the molecular dynamics at both interfaces and all three temperatures (see Fig.~\ref{fig:bebeo}).
+        \TODO{quantify the error}
+    \item This case is a single rate equation.
+        Its value is that the rates fitted to molecular dynamics enter a component-scale model unchanged.
+    \item \textbf{W/Cu, multi-site.} Steady concentrations agree with the reference within \qtyrange{3}{19}{\percent} over ten orders of magnitude (see Fig.~\ref{fig:wcunetwork}a).
+        \VERIFY{origin of the offset, probably rounding of the tabulated barriers}
     \item The time to steady state is \qty{2969}{\second} at \qty{340}{\kelvin}, \qty{1.20}{\second} at \qty{430}{\kelvin} and \qty{1.77e-3}{\second} at \qty{550}{\kelvin}, against \qtylist{2630;1.06;1.55e-3}{\second} in the reference (see Fig.~\ref{fig:wcunetwork}b).
-    \item \KEY{The reference holds the tungsten concentration fixed. With the diffusivity of tungsten, \qty{1}{\micro\metre} of tungsten cannot supply the interface at that rate, and filling takes about \qty{e7}{\second} at \qty{340}{\kelvin}. Coupling the interface to the bulk changes the answer by four orders of magnitude.}
-    \item \textbf{W/Cu, bilayer.} The steady permeation flux is that of the equilibrium condition within \qty{1.4}{\percent}, as Eq.~\ref{eq:interface:lte} requires. The difference is site blocking, largest where the coverage is highest.
-    \item The transient differs when the layers are thin and cold. At \qty{340}{\kelvin}, breakthrough is delayed by \qty{5}{\percent} for \qty{6}{\milli\metre} of tungsten and by a factor of \num{3.5e4} for \qty{6}{\micro\metre} (see Fig.~\ref{fig:interface}).
-    \item In the thin layer the interface holds \qty{8e18}{\per\metre\squared}, against \qty{4e14}{\per\metre\squared} in the two bulk layers, and its coverage reaches \num{0.57}. An algebraic condition represents neither.
-    \item At \qty{550}{\kelvin} the delay stays below a factor of two at every thickness considered. The equilibrium condition is adequate for a monoblock, and inadequate for a thin coating at low temperature.
+    \item \KEY{The reference holds the tungsten concentration fixed.
+        With the diffusivity of tungsten, \qty{1}{\micro\metre} of tungsten cannot supply the interface at that rate, and filling takes about \qty{e7}{\second} at \qty{340}{\kelvin}.
+        Coupling the interface to the bulk changes the answer by more than three orders of magnitude.}
+    \item \textbf{W/Cu, bilayer.} The steady permeation flux is that of the equilibrium condition within \qty{1.4}{\percent}, as Eq.~\ref{eq:interface:lte} requires.
+        The difference is site blocking, largest where the coverage is highest.
+    \item The transient differs when the layers are thin and cold.
+        At \qty{340}{\kelvin}, breakthrough is delayed by \qty{5}{\percent} for \qty{6}{\milli\metre} of tungsten and by a factor of \num{3.5e4} for \qty{6}{\micro\metre} (see Fig.~\ref{fig:interface}).
+    \item In the thin layer the interface holds \qty{8e18}{\per\metre\squared}, against \qty{4e14}{\per\metre\squared} in the two bulk layers, and its coverage reaches \num{0.57}.
+        An algebraic condition represents neither.
+    \item At \qty{550}{\kelvin} the delay stays below a factor of two at every thickness considered.
+        The equilibrium condition is adequate for a monoblock, and inadequate for a thin coating at low temperature.
     \item It should be noted that these are demonstrations on published parameters, not validations against permeation data.
 \end{itemize}
 
@@ -418,22 +470,28 @@
 % ---------------------------------------------------------------
 
 \begin{itemize}
-    \item Grain boundaries are fast paths for hydrogen. \TODO{cite Fisher; grain-boundary diffusion data}
+    \item Grain boundaries are fast paths for hydrogen.
+        \TODO{cite Fisher; grain-boundary diffusion data}
     \item Geometry: a 2D Voronoi tessellation of 30 grains in a square of side $L$, meshed so that every boundary lies on facets.
-    \item Each grain is a bulk subdomain with its own concentration $c_g$. The whole boundary network is one manifold, adjacent to every grain, with one field.
-    \item The boundaries have no thickness. The network carries an areal density $\sigma$, with $\alpha = 1$:
+    \item Each grain is a bulk subdomain with its own concentration $c_g$.
+        The whole boundary network is one manifold, adjacent to every grain, with one field.
+    \item The boundaries have no thickness.
+        The network carries an areal density $\sigma$, with $\alpha = 1$:
 \end{itemize}
 \begin{equation}
     \frac{\partial \sigma}{\partial t} = \gradG \cdot \left( D_\mathrm{gb} \gradG \sigma \right) + \sum_g J_g, \qquad J_g = k_\mathrm{t}\, c_g - k_\mathrm{d}\, \sigma
     \label{eq:gb}
 \end{equation}
 \begin{itemize}
-    \item $D_\mathrm{gb}$ is the diffusivity along the boundaries, $k_\mathrm{t}$ a trapping velocity and $k_\mathrm{d}$ a detrapping rate. Their ratio $k_\mathrm{t}/k_\mathrm{d}$ is a segregation length.
+    \item $D_\mathrm{gb}$ is the diffusivity along the boundaries, $k_\mathrm{t}$ a trapping velocity and $k_\mathrm{d}$ a detrapping rate.
+        Their ratio $k_\mathrm{t}/k_\mathrm{d}$ is a segregation length.
     \item One field on a connected network: hydrogen crosses a triple junction with no junction condition to write.
     \item Hydrogen passes from one grain to the next only through the boundary between them.
     \item Conditions: unit concentration on one face, for the grains and for the boundary ends at equilibrium with them; zero on the opposite face.
-    \item The case is dimensionless: $D_\mathrm{gb}/D = 10^{3}$, $k_\mathrm{t} L / D = 10^{2}$, $k_\mathrm{t}/(k_\mathrm{d} L) = 10^{-2}$. \TODO{decide whether to source values for tungsten}
-    \item Scope: a demonstration on a synthetic microstructure. Measured microstructures and homogenisation are left to future work.
+    \item The case is dimensionless: $D_\mathrm{gb}/D = 10^{3}$, $k_\mathrm{t} L / D = 10^{2}$, $k_\mathrm{t}/(k_\mathrm{d} L) = 10^{-2}$.
+        \TODO{decide whether to source values for tungsten}
+    \item Scope: a demonstration on a synthetic microstructure.
+        Measured microstructures and homogenisation are left to future work.
 \end{itemize}
 
 % ---------------------------------------------------------------
@@ -446,7 +504,8 @@
     \item At steady state the network carries 31 times the flux of the grains (see Fig.~\ref{fig:polycrystal}b).
     \item Breakthrough occurs about three orders of magnitude earlier than with $D_\mathrm{gb} = D$.
     \item The flux carried by the network and the inventory it holds are exported separately from those of the grains, which a homogenised diffusivity cannot provide.
-    \item Cost: the network adds one degree of freedom per boundary vertex, whatever the physical width of a boundary. \TODO{cell counts, against an estimate for a resolved boundary}
+    \item Cost: the network adds one degree of freedom per boundary vertex, whatever the physical width of a boundary.
+        \TODO{cell counts, against an estimate for a resolved boundary}
 \end{itemize}
 
 \begin{figure*}
@@ -462,10 +521,12 @@
 % ===============================================================
 
 \begin{itemize}
-    \item The three applications use Eqs.~\ref{eq:manifold} and~\ref{eq:coupling} unchanged. Only the exchange law $J_i$ and the factor $\alpha$ differ.
+    \item The three applications use Eqs.~\ref{eq:manifold} and~\ref{eq:coupling} unchanged.
+        Only the exchange law $J_i$ and the factor $\alpha$ differ.
     \item A manifold is appropriate when the feature is thin against the scale over which the bulk concentration varies, and carries its own state or its own transport.
     \item It is not appropriate when the profile across the feature matters, or when its thickness is comparable to that scale.
-    \item Relation to an algebraic condition: the manifold contains it as the limit of fast exchange and negligible capacity (Eq.~\ref{eq:interface:lte}). Section~\ref{sec:app:interface:results} gives the regime where the limit holds for W/Cu.
+    \item Relation to an algebraic condition: the manifold contains it as the limit of fast exchange and negligible capacity (Eq.~\ref{eq:interface:lte}).
+        Section~\ref{sec:app:interface:results} gives the regime where the limit holds for W/Cu.
     \item Relation to a system code: the manifold reproduces the plug-flow solution, and adds the transient and a resolved wall in the same solve.
     \item The factor $\alpha$ is left to the user and is a likely source of error.
     \item \TODO{cost, collected across the three applications}
@@ -480,7 +541,8 @@
     \item Codimension two, a line in a 3D mesh, is not supported: a bulk field has no well-defined value on such a line.
     \item Networks and interior manifolds currently run in serial. \VERIFY{status at submission}
     \item Resolution along the manifold is that of the parent mesh, and drift-dominated transport is not stabilised.
-    \item The exchange law is the main uncertainty. For most interfaces and grain boundaries the rates are not measured, and come from atomistic calculations where they exist.
+    \item The exchange law is the main uncertainty.
+        For most interfaces and grain boundaries the rates are not measured, and come from atomistic calculations where they exist.
     \item Future work will combine a manifold with the kinetic interface channels of the companion paper, and will address measured microstructures.
 \end{itemize}
 
@@ -494,7 +556,8 @@
     \item It converges at second order and reproduces an analytical permeator solution, molecular dynamics at Be/BeO and a rate-equation model at W/Cu.
     \item An interface with its own inventory delays breakthrough through thin, cold layers by orders of magnitude, and leaves the steady flux unchanged.
     \item A grain-boundary network is described as one manifold with one field, with no junction condition.
-    \item \TODO{Write last. Nothing that Secs.~\ref{sec:app:pfr} to~\ref{sec:app:gb} do not support.}
+    \item \TODO{Write last.
+        Nothing that Secs.~\ref{sec:app:pfr} to~\ref{sec:app:gb} do not support.}
 \end{itemize}
 
 % ===============================================================
@@ -509,7 +572,8 @@
 \begin{itemize}
     \item \TODO{Repository URL and Zenodo DOI once minted.}
     \item Every figure produced by a script in the repository; sweeps write the data they plot.
-    \item The implementation is in \FESTIM{}~\cite{dark_festim_2026}. \TODO{name the release and the test files}
+    \item The implementation is in \FESTIM{}~\cite{dark_festim_2026}.
+        \TODO{name the release and the test files}
 \end{itemize}
 
 % ===============================================================
