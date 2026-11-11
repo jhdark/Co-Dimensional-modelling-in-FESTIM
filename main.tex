@@ -241,15 +241,18 @@
 % ---------------------------------------------------------------
 
 \begin{itemize}
-    \item Method of manufactured solutions on a tilted manifold in 3D, so the tangential operator is exercised away from a mesh-aligned plane.
-    \item An interior manifold between two bulk subdomains against the analytical steady state of the equivalent series chain, with different exchange rates on the two sides.
-    \item Particle conservation across an interior manifold, and balance of the exported fluxes at steady state.
-    \item Independence of the result from the order in which subdomains are declared, which the arbitrary facet restriction would otherwise leak into the answer.
-    \item A transient run reaching the steady solution, and exact integration of a time-dependent source on the manifold.
-    \item A three-grain network against the 1D series chain, and a triple junction feeding every grain through one network.
-    \item Fixed concentration on the ends of a manifold against the analytical solution, and the outlet flux of a manifold carrying advection.
-    \item These run in the \FESTIM{} continuous integration suite. \TODO{decide which go in the paper as figures, which are named as tests, and which move to an appendix}
-    \item \TODO{Is a spatial convergence study wanted, showing the expected order for the coupled problem? It is the one thing the test suite checks that a reader cannot see.}
+    \item Method of manufactured solutions on the unit square and the unit cube, with $\Gamma$ one face of the domain.
+    \item Exact solution, in coordinates $(\xi_0, \xi_1)$ attached to the domain, with a linear exchange $J = k \left( c - c_\Gamma \right)$:
+\end{itemize}
+\begin{equation}
+    c = 1 + \xi_0^2 + \left( 1 + \xi_0 \right) \cos \left( \pi \xi_1 \right), \qquad c_\Gamma = 1 + \left( 1 - \frac{D}{k} \right) \cos \left( \pi \xi_1 \right)
+    \label{eq:mms}
+\end{equation}
+\begin{itemize}
+    \item The exchange flux $J = D \cos \left( \pi \xi_1 \right)$ varies along $\Gamma$, so the coupling is exercised. Sources follow from Eqs.~\ref{eq:bulk} and~\ref{eq:manifold}.
+    \item In 3D the cube is rotated so that $\Gamma$ is aligned with no coordinate axis, which exercises Eq.~\ref{eq:gradG}.
+    \item Result: the relative $L^2$ error of both fields decreases at second order, with fitted orders of \num{2.00} in 2D and \num{1.97} in 3D (see Fig.~\ref{fig:convergence}).
+    \item The \FESTIM{} test suite additionally covers conservation across an interior manifold, independence from the order of declaration, triple junctions and radial coordinates. \TODO{name the test files in the data availability section}
 \end{itemize}
 
 \begin{figure}
