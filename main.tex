@@ -334,7 +334,7 @@ The fitted orders are \num{2.00} in 2D and \num{1.97} in 3D.
 The \FESTIM{} test suite additionally covers conservation across an interior manifold, independence from the order of declaration, triple junctions and radial coordinates.
 
 % ===============================================================
-\section{Application 1: coupling a 1D flow model to a 2D/3D component}
+\section{Application 1: coupling a 1D flow model to a 2D component}
 \label{sec:app:pfr}
 % ===============================================================
 
@@ -343,13 +343,10 @@ The \FESTIM{} test suite additionally covers conservation across an interior man
 \label{sec:app:pfr:setup}
 % ---------------------------------------------------------------
 
-\begin{itemize}
-    \item Case: a permeator tube.
-        Tritium dissolved in a flowing liquid permeates through the tube wall into vacuum.
-    \item The wall is an axisymmetric bulk subdomain.
-        The liquid is not meshed: it is a manifold on the inner surface, at radius $r_\mathrm{i}$, carrying the cross-section averaged concentration $c_\mathrm{f}$.
-    \item Plug-flow balance, Eq.~\ref{eq:manifold} with $\alpha = 2/r_\mathrm{i}$ and a flux leaving the liquid:
-\end{itemize}
+The first application is a permeator tube, in which tritium dissolved in a flowing liquid permeates through the tube wall into vacuum.
+The wall is an axisymmetric bulk subdomain.
+The liquid is not meshed: it is a manifold on the inner surface of the wall, at radius $r_\mathrm{i}$, carrying the cross-section averaged concentration $c_\mathrm{f}$.
+This concentration obeys a plug-flow balance, which is Eq.~\ref{eq:manifold} with $\alpha = 2/r_\mathrm{i}$ and a flux leaving the liquid:
 \begin{equation}
     \frac{\partial c_\mathrm{f}}{\partial t} + u \frac{\partial c_\mathrm{f}}{\partial z} = D_\mathrm{l} \frac{\partial^2 c_\mathrm{f}}{\partial z^2} - \frac{2}{r_\mathrm{i}} J
     \label{eq:pfr}
@@ -358,58 +355,79 @@ The \FESTIM{} test suite additionally covers conservation across an interior man
     J = k_\mathrm{T} \left( c_\mathrm{f} - c_\mathrm{w,l} \right)
     \label{eq:pfr:J}
 \end{equation}
-\begin{itemize}
-    \item $u$ is the mean velocity, $D_\mathrm{l}$ the diffusivity in the liquid, $k_\mathrm{T}$ the mass transfer coefficient and $c_\mathrm{w,l}$ the liquid concentration at the wall.
-    \item The liquid at the wall is in equilibrium with the metal surface, at concentration $c_\mathrm{w}$:
-\end{itemize}
+where $u$ is the mean velocity, $D_\mathrm{l}$ is the diffusivity in the liquid and $k_\mathrm{T}$ is the mass transfer coefficient.
+$c_\mathrm{w,l}$ is the concentration in the liquid at the wall, which is assumed to be in equilibrium with the metal surface at concentration $c_\mathrm{w}$:
 \begin{equation}
-    c_\mathrm{w,l} = \frac{K_\mathrm{l}}{K_\mathrm{s}}\, c_\mathrm{w} \quad \text{(Sieverts liquid)}, \qquad c_\mathrm{w,l} = K_\mathrm{H} \left( \frac{c_\mathrm{w}}{K_\mathrm{s}} \right)^2 \quad \text{(Henry liquid)}
+    c_\mathrm{w,l} =
+    \begin{cases}
+        \dfrac{K_\mathrm{l}}{K_\mathrm{s}}\, c_\mathrm{w} & \text{Sieverts liquid} \\[2ex]
+        K_\mathrm{H} \left( \dfrac{c_\mathrm{w}}{K_\mathrm{s}} \right)^2 & \text{Henry liquid}
+    \end{cases}
     \label{eq:pfr:eq}
 \end{equation}
-\begin{itemize}
-    \item $K_\mathrm{s}$ and $K_\mathrm{l}$ are Sieverts solubilities of the wall and the liquid, and $K_\mathrm{H}$ a Henry solubility.
-        The second law is nonlinear in the wall concentration.
-    \item Conditions: fixed concentration $c_\mathrm{in}$ at the inlet, outflow at the outlet, zero concentration on the outer surface of the wall.
-    \item Two published cases: Pb-17Li in a RAFM steel tube and FLiBe in a nickel tube.
-        \TODO{cite Rader et al. 2018 and Humrickhouse and Merrill 2015; parameter table}
-    \item Reference: for a Sieverts liquid the steady extraction efficiency $\eta = 1 - c_\mathrm{f}(L)/c_\mathrm{in}$ of a tube of length $L$ and inner diameter $d$ is
-\end{itemize}
+where $K_\mathrm{s}$ and $K_\mathrm{l}$ are the Sieverts solubilities of the wall and of the liquid, and $K_\mathrm{H}$ is a Henry solubility.
+The second law makes the exchange nonlinear in the wall concentration.
+
+A fixed concentration $c_\mathrm{in}$ is applied at the inlet of the manifold and an outflow condition at its outlet.
+The concentration is set to zero on the outer surface of the wall.
+Two published cases are considered: Pb-17Li in a RAFM steel tube, and FLiBe in a nickel tube. \TODO{cite Rader et al. 2018}
+Their parameters are given in Table~\ref{tab:permeator}.
+For a Sieverts liquid, the steady extraction efficiency $\eta = 1 - c_\mathrm{f}(L)/c_\mathrm{in}$ of a tube of length $L$ and inner diameter $d$ has an analytical solution: \TODO{cite Humrickhouse and Merrill 2015}
 \begin{equation}
-    \eta = 1 - \exp \left( -\tau \frac{\zeta}{1 + \zeta} \right), \qquad \tau = \frac{4 k_\mathrm{T} L}{u\, d}, \qquad \zeta = \frac{2 D_\mathrm{s} K_\mathrm{s}}{k_\mathrm{T} K_\mathrm{l}\, d \ln \left( d_\mathrm{o}/d \right)}
+    \begin{gathered}
+        \eta = 1 - \exp \left( -\tau \frac{\zeta}{1 + \zeta} \right) \\
+        \tau = \frac{4 k_\mathrm{T} L}{u\, d}, \qquad \zeta = \frac{2 D_\mathrm{s} K_\mathrm{s}}{k_\mathrm{T} K_\mathrm{l}\, d \ln \left( d_\mathrm{o}/d \right)}
+    \end{gathered}
     \label{eq:pfr:eta}
 \end{equation}
-\begin{itemize}
-    \item $D_\mathrm{s}$ is the diffusivity in the wall and $d_\mathrm{o}$ the outer diameter.
-        The Henry case has an analytical solution in terms of the Lambert $W$ function.
-        \TODO{cite}
-    \item \VERIFY{solubility units and the FLiBe inlet concentration are inferred from the published regime number}
-\end{itemize}
+where $D_\mathrm{s}$ is the diffusivity in the wall and $d_\mathrm{o}$ is the outer diameter.
+The Henry case also has an analytical solution, expressed with the Lambert $W$ function.
+
+\begin{table}
+    \centering
+    \caption{Parameters of the two permeator cases. \TODO{cite Rader et al. 2018} \VERIFY{solubility units and the FLiBe inlet concentration are inferred from the published regime number}}
+    \label{tab:permeator}
+    \begin{tabular}{lll}
+        \hline
+        Parameter & Pb-17Li / RAFM & FLiBe / Ni \\
+        \hline
+        $L$ (\unit{\metre}) & \num{37.3} & \num{50} \\
+        $d$ (\unit{\milli\metre}) & \num{10} & \num{25.4} \\
+        Wall thickness (\unit{\milli\metre}) & \num{0.5} & \num{0.25} \\
+        $u$ (\unit{\metre\per\second}) & \num{1.768} & \num{2.5} \\
+        $T$ (\unit{\kelvin}) & \num{743.15} & \num{973.15} \\
+        $k_\mathrm{T}$ (\unit{\metre\per\second}) & \num{4.14e-4} & \num{1.71e-4} \\
+        $D_\mathrm{l}$ (\unit{\metre\squared\per\second}) & \num{3.16e-9} & \num{5.18e-9} \\
+        $D_\mathrm{s}$ (\unit{\metre\squared\per\second}) & \num{1.18e-8} & \num{3.19e-9} \\
+        $K_\mathrm{s}$ (\unit{\mole\per\metre\cubed\per\pascal\tothe{0.5}}) & \num{8.52e-3} & \num{0.254} \\
+        $K_\mathrm{l}$ (\unit{\mole\per\metre\cubed\per\pascal\tothe{0.5}}) & \num{1.01e-3} & \\
+        $K_\mathrm{H}$ (\unit{\mole\per\metre\cubed\per\pascal}) & & \num{5.27e-7} \\
+        \hline
+    \end{tabular}
+\end{table}
 
 % ---------------------------------------------------------------
 \subsection{Results}
 \label{sec:app:pfr:results}
 % ---------------------------------------------------------------
 
-\begin{itemize}
-    \item Steady state: the efficiency along the tube follows the analytical solution within \num{2e-5} for both cases (see Fig.~\ref{fig:coolant}a).
-    \item At the outlet the efficiency is \num{0.690} for Pb-17Li and \num{0.415} for FLiBe, equal to the published values.
-    \item The FLiBe case is limited by mass transfer in the liquid, so it tests the film term more than the nonlinear equilibrium.
-        \TODO{consider a wall-limited variant}
-    \item Transient: start-up from a tube full of liquid at $c_\mathrm{in}$ and an empty wall.
-        The outlet efficiency settles after about one transit time $L/u$ (see Fig.~\ref{fig:coolant}b).
-        \VERIFY{the slight overshoot, on a finer mesh}
-    \item The analytical solution has no transient and no axial variation of the wall.
-        Both come at no extra cost here, since the wall is resolved and the two fields share a time step.
-    \item Cost: the liquid adds one degree of freedom per wall facet.
-        \TODO{number of cells and solve time}
-\end{itemize}
+At steady state, the extraction efficiency along the tube agrees with the analytical solution within \num{2e-5} for both cases (see Fig.~\ref{fig:coolant}a).
+At the outlet, the efficiency is \num{0.690} for Pb-17Li and \num{0.415} for FLiBe, which are the published values.
+It should be noted that the FLiBe case is limited by mass transfer in the liquid.
+It therefore tests the film term of Eq.~\ref{eq:pfr:J} more than the nonlinear equilibrium of Eq.~\ref{eq:pfr:eq}.
 
 \begin{figure*}
     \centering
     \includegraphics[width=\textwidth]{permeator}
-    \caption{Permeator tube with the flowing liquid carried on a manifold along the inner surface of an axisymmetric wall. (a) Extraction efficiency along the tube against the analytical solution, for the two cases of Rader et al. (b) Outlet efficiency during start-up of the Pb-17Li case. \TODO{draft figure; cite Humrickhouse and Merrill 2015, Rader et al. 2018}}
+    \caption{Extraction efficiency along a permeator tube with the liquid carried on a manifold, compared with the analytical solution for two published cases (a), and temporal evolution of the outlet efficiency during start-up of the Pb-17Li case (b).}
     \label{fig:coolant}
 \end{figure*}
+
+The analytical solution describes neither a transient nor a variation of the wall along the tube.
+Both are available here at no extra cost, since the wall is resolved and the two fields share a time step.
+As an example, the start-up of the Pb-17Li case was simulated from a tube full of liquid at $c_\mathrm{in}$ and an empty wall.
+The outlet efficiency reaches its steady value after approximately one transit time $L/u$ (see Fig.~\ref{fig:coolant}b). \VERIFY{the slight overshoot, on a finer mesh}
+In this model, the liquid adds only one degree of freedom per facet of the inner surface. \TODO{cell count and solve time}
 
 % ===============================================================
 \section{Application 2: interfaces carrying their own inventory}
