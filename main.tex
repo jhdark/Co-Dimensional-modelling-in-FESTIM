@@ -116,23 +116,30 @@ Finally, the grain-boundary network of a Voronoi polycrystal is described as a s
 \label{sec:intro}
 % ===============================================================
 
-\begin{itemize}
-    \item Hydrogen isotope transport sets fuel retention, permeation losses and tritium accountancy in fusion systems~\cite{meschini_impact_2025, meschini_modeling_2023}.
-    \item Macroscopic codes (\FESTIM{}~\cite{dark_festim_2026}, \TMAP{}8~\cite{simon_moose-based_2025}, \textsc{tessim-x}~\cite{schmid_implications_2024}, \MHIMS{}~\cite{hodille_macroscopic_2015}) solve bulk diffusion and trapping on a meshed domain.
-    \item Components contain features far thinner than themselves: grain boundaries, material interfaces, cracks, coolant channels.
-    \item These features often control the transport, and resolving them in the mesh drives the cell count and the aspect ratio.
-    \item However, the usual treatments each discard something: a homogenised property loses the state of the feature, an algebraic interface condition loses its inventory and its kinetics, and an external system code loses the monolithic coupling.
-    \item \KEY{Contribution: a co-dimensional description in \FESTIM{}.
-        The feature is a subdomain of one dimension less than the mesh, called a manifold, which carries its own transport equation and exchanges a flux with the bulk.}
-    \item Released in \FESTIM{} 2.2, open source, and covered by the continuous integration suite.
-        \VERIFY{release version and date at submission}
-    \item Verification: second-order convergence against a manufactured solution, in 2D and on a tilted manifold in 3D.
-    \item Three applications, each against a reference: a permeator tube with the flowing liquid on a manifold, against an analytical solution; interfaces carrying their own inventory, against molecular dynamics at Be/BeO~\cite{hodille_molecular_2022} and a rate-equation model at W/Cu~\cite{silva-solis_hydrogen_2026}; a grain-boundary network in a Voronoi polycrystal.
-    \item Relation to the companion paper: there an interface is a reactive surface with no stored inventory, here it has its own state.
-        \TODO{cite the companion once it has a number}
-    \item All scripts and data are available in a public repository.
-        \TODO{URL and DOI}
-\end{itemize}
+Hydrogen isotope transport in materials governs fuel retention, permeation losses and tritium accountancy in fusion systems~\cite{meschini_impact_2025, meschini_modeling_2023}.
+Predicting these quantities at the component scale relies on macroscopic transport codes such as \FESTIM{}~\cite{dark_festim_2026}, \TMAP{}8~\cite{simon_moose-based_2025}, \textsc{tessim-x}~\cite{schmid_implications_2024} and \MHIMS{}~\cite{hodille_macroscopic_2015}.
+These codes solve diffusion and trapping equations on a meshed domain.
+
+Fusion components contain features that are far thinner than the components themselves.
+Examples include the interfaces between materials, grain boundaries, cracks and coolant channels.
+These features often control the transport of hydrogen.
+An interface can trap hydrogen and delay permeation~\cite{hodille_molecular_2022, silva-solis_hydrogen_2026}, a grain boundary can act as a fast diffusion path, and a flowing liquid carries away what permeates into it.
+However, resolving a feature of atomic or millimetre width in the mesh of a larger component is costly, since it drives both the number of cells and their aspect ratio.
+
+The existing treatments avoid this cost by removing the feature from the model, and each discards something in doing so.
+A homogenised property loses the state of the feature.
+An algebraic interface condition loses the inventory of the interface and its kinetics.
+Coupling to an external system code loses the monolithic solution of the fluid and the solid.
+These limitations are detailed in Sec.~\ref{sec:motivation}.
+
+To address them, this work presents a co-dimensional description of thin features in \FESTIM{}.
+The feature is represented as a subdomain of one dimension less than the mesh, called a manifold, which carries its own transport equation and exchanges a flux with the bulk.
+The formulation, its implementation and its verification are described in Sec.~\ref{sec:method}.
+It is then applied to three cases, each compared with a reference: a permeator tube with the flowing liquid carried on a manifold (Sec.~\ref{sec:app:pfr}), interfaces carrying their own inventory at Be/BeO and W/Cu (Sec.~\ref{sec:app:interface}), and a grain-boundary network in a polycrystal (Sec.~\ref{sec:app:gb}).
+The second case extends a companion paper, in which interfaces are treated as reactive surfaces with no stored inventory. \TODO{cite the companion once it has a number}
+
+The implementation is available in \FESTIM{} 2.2. \VERIFY{release version at submission}
+All the results presented in this paper can be reproduced with the scripts described in Sec.~\ref{sec:data}.
 
 % ===============================================================
 \section{Motivation}
