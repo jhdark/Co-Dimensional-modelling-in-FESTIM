@@ -462,13 +462,13 @@
 % ===============================================================
 
 \begin{itemize}
-    \item When a co-dimensional description is the right choice: the feature is thin compared with the scale over which the bulk concentration varies, and it carries either its own state or its own transport.
-    \item When it is not: when the profile across the feature matters, or when its thickness is comparable to the bulk gradient scale, in which case it should be resolved.
-    \item Relation to an algebraic interface condition: the two are mutually exclusive on the same facets, and the manifold approaches the algebraic condition in the limit of fast exchange and vanishing capacity. The choice is therefore not either/or but a question of which limit the physics sits in.
-    \item Relation to homogenisation: the applications give three cases where the effective-property route loses something specific and measurable.
-    \item The unit convention for the manifold variable is a genuine hazard for users, and worth restating here.
-    \item Resolution along the manifold is inherited from the parent mesh, which is the main practical constraint on the method.
-    \item Cost, collected across the three applications. \TODO{fill in once the numbers exist}
+    \item The three applications use Eqs.~\ref{eq:manifold} and~\ref{eq:coupling} unchanged. Only the exchange law $J_i$ and the factor $\alpha$ differ.
+    \item A manifold is appropriate when the feature is thin against the scale over which the bulk concentration varies, and carries its own state or its own transport.
+    \item It is not appropriate when the profile across the feature matters, or when its thickness is comparable to that scale.
+    \item Relation to an algebraic condition: the manifold contains it as the limit of fast exchange and negligible capacity (Eq.~\ref{eq:interface:lte}). Section~\ref{sec:app:interface:results} gives the regime where the limit holds for W/Cu.
+    \item Relation to a system code: the manifold reproduces the plug-flow solution, and adds the transient and a resolved wall in the same solve.
+    \item The factor $\alpha$ is left to the user and is a likely source of error.
+    \item \TODO{cost, collected across the three applications}
 \end{itemize}
 
 % ---------------------------------------------------------------
