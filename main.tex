@@ -88,15 +88,18 @@
 \address[umn]{Department of Mechanical Engineering, University of Minnesota, 111 Church Street SE, Minneapolis, MN 55455, USA}
 
 \begin{abstract}
-Thin features such as material interfaces, grain boundaries and coolant channels often control hydrogen transport in fusion components, yet they are costly to resolve in a mesh.
+Thin features such as material interfaces, grain boundaries and coolant channels often control hydrogen transport in fusion components.
+However, they are costly to resolve in a mesh.
 This work presents a co-dimensional description of such features in the open-source hydrogen transport code \FESTIM{}.
-The feature is a subdomain of one dimension less than the mesh, called a manifold, which carries its own transport equation and exchanges a flux with the bulk.
+The feature is a subdomain of one dimension less than the mesh, called a manifold.
+It carries its own transport equation and exchanges a flux with the bulk.
 The manifold and the bulk are solved together in a single nonlinear system.
 The implementation converges at second order against a manufactured solution, in 2D and on a tilted manifold in 3D.
 Three applications are presented.
 A permeator tube with the flowing liquid carried on a manifold reproduces published extraction efficiencies of \num{0.690} and \num{0.415}.
 An interface carrying its own inventory reproduces molecular dynamics results at Be/BeO and a multi-site rate-equation model at W/Cu.
-For a W/Cu bilayer, the interfacial inventory leaves the steady flux unchanged but delays breakthrough by more than four orders of magnitude in thin layers at low temperature.
+For a W/Cu bilayer, the interfacial inventory leaves the steady flux unchanged.
+However, it delays breakthrough by more than four orders of magnitude in thin layers at low temperature.
 Finally, the grain-boundary network of a Voronoi polycrystal is described as a single manifold, with no condition required at triple junctions.
 \end{abstract}
 
@@ -123,8 +126,10 @@ These codes solve diffusion and trapping equations on a meshed domain.
 Fusion components contain features that are far thinner than the components themselves.
 Examples include the interfaces between materials, grain boundaries, cracks and coolant channels.
 These features often control the transport of hydrogen.
-An interface can trap hydrogen and delay permeation~\cite{hodille_molecular_2022, silva-solis_hydrogen_2026}, a grain boundary can act as a fast diffusion path, and a flowing liquid carries away what permeates into it.
-However, resolving a feature of atomic or millimetre width in the mesh of a larger component is costly, since it drives both the number of cells and their aspect ratio.
+An interface can trap hydrogen and delay permeation~\cite{hodille_molecular_2022, silva-solis_hydrogen_2026}.
+A grain boundary can act as a fast diffusion path, and a flowing liquid carries away what permeates into it.
+However, resolving such a feature in the mesh of a larger component is costly.
+It drives both the number of cells and their aspect ratio.
 
 The existing treatments avoid this cost by removing the feature from the model, and each discards something in doing so.
 A homogenised property loses the state of the feature.
@@ -133,9 +138,13 @@ Coupling to an external system code loses the monolithic solution of the fluid a
 These limitations are detailed in Sec.~\ref{sec:motivation}.
 
 To address them, this work presents a co-dimensional description of thin features in \FESTIM{}.
-The feature is represented as a subdomain of one dimension less than the mesh, called a manifold, which carries its own transport equation and exchanges a flux with the bulk.
+The feature is represented as a subdomain of one dimension less than the mesh, called a manifold.
+It carries its own transport equation and exchanges a flux with the bulk.
 The formulation, its implementation and its verification are described in Sec.~\ref{sec:method}.
-It is then applied to three cases, each compared with a reference: a permeator tube with the flowing liquid carried on a manifold (Sec.~\ref{sec:app:pfr}), interfaces carrying their own inventory at Be/BeO and W/Cu (Sec.~\ref{sec:app:interface}), and a grain-boundary network in a polycrystal (Sec.~\ref{sec:app:gb}).
+It is then applied to three cases, each compared with a reference where one exists.
+The first is a permeator tube with the flowing liquid carried on a manifold (Sec.~\ref{sec:app:pfr}).
+The second is an interface carrying its own inventory, at Be/BeO and at W/Cu (Sec.~\ref{sec:app:interface}).
+The third is a grain-boundary network in a polycrystal (Sec.~\ref{sec:app:gb}).
 The second case extends a companion paper, in which interfaces are treated as reactive surfaces with no stored inventory. \TODO{cite the companion once it has a number}
 
 The implementation is available in \FESTIM{} 2.2. \VERIFY{release version at submission}
@@ -345,7 +354,8 @@ The \FESTIM{} test suite additionally covers conservation across an interior man
 
 The first application is a permeator tube, in which tritium dissolved in a flowing liquid permeates through the tube wall into vacuum.
 The wall is an axisymmetric bulk subdomain.
-The liquid is not meshed: it is a manifold on the inner surface of the wall, at radius $r_\mathrm{i}$, carrying the cross-section averaged concentration $c_\mathrm{f}$.
+The liquid is not meshed.
+It is a manifold on the inner surface of the wall, at radius $r_\mathrm{i}$, carrying the cross-section averaged concentration $c_\mathrm{f}$.
 This concentration obeys a plug-flow balance, which is Eq.~\ref{eq:manifold} with $\alpha = 2/r_\mathrm{i}$ and a flux leaving the liquid:
 \begin{equation}
     \frac{\partial c_\mathrm{f}}{\partial t} + u \frac{\partial c_\mathrm{f}}{\partial z} = D_\mathrm{l} \frac{\partial^2 c_\mathrm{f}}{\partial z^2} - \frac{2}{r_\mathrm{i}} J
@@ -536,7 +546,8 @@ The equilibrium condition is therefore adequate for a monoblock, and inadequate 
 % ---------------------------------------------------------------
 
 Grain boundaries can act as fast diffusion paths for hydrogen. \TODO{cite Fisher; grain-boundary diffusion data}
-The third application considers a 2D Voronoi tessellation of 30 grains in a square of side $L$, meshed so that every boundary lies on facets.
+The third application considers a 2D Voronoi tessellation of 30 grains in a square of side $L$.
+It is meshed so that every boundary lies on facets.
 Each grain is a bulk subdomain with its own concentration $c_g$.
 The whole boundary network is one manifold, adjacent to every grain, with a single field.
 The boundaries have no thickness: the network carries an areal density $\sigma$, with $\alpha = 1$:
@@ -584,7 +595,8 @@ The network adds one degree of freedom per vertex lying on a boundary, whatever 
 
 The three applications use Eqs.~\ref{eq:manifold} and~\ref{eq:coupling} unchanged.
 Only the exchange law $J_i$ and the factor $\alpha$ differ between a flowing liquid, an interfacial plane and a grain-boundary network.
-A manifold is appropriate when the feature is thin compared with the scale over which the bulk concentration varies, and when it carries its own state or its own transport.
+A manifold is appropriate when the feature is thin compared with the scale over which the bulk concentration varies.
+The feature must also carry its own state or its own transport.
 It is not appropriate when the profile across the feature matters.
 
 The manifold contains the algebraic interface condition as the limit of fast exchange and negligible capacity (see Eq.~\ref{eq:interface:lte}).
@@ -616,11 +628,13 @@ The application to measured microstructures will be investigated in a future stu
 % ===============================================================
 
 This work presents a co-dimensional description of thin features in the hydrogen transport code \FESTIM{}.
-A manifold of one dimension less than the mesh carries its own transport equation, exchanges a flux with the bulk, and is solved monolithically with it.
+A manifold of one dimension less than the mesh carries its own transport equation and exchanges a flux with the bulk.
+The two are solved monolithically.
 The implementation converges at second order against a manufactured solution, in 2D and on a tilted manifold in 3D.
 
 Three applications were presented.
-A permeator tube with the liquid carried on a manifold reproduced published extraction efficiencies of \num{0.690} and \num{0.415}, within \num{2e-5} of the analytical solution along the tube.
+A permeator tube with the liquid carried on a manifold reproduced published extraction efficiencies of \num{0.690} and \num{0.415}.
+The efficiency along the tube was within \num{2e-5} of the analytical solution.
 An interface described as a manifold reproduced molecular dynamics results at Be/BeO, and a fourteen-site rate-equation model at W/Cu within \qtyrange{3}{19}{\percent}.
 In a W/Cu bilayer, the interfacial inventory left the steady flux unchanged within \qty{1.4}{\percent}.
 However, it delayed breakthrough by a factor of \num{3.5e4} for \qty{6}{\micro\metre} of tungsten at \qty{340}{\kelvin}.
