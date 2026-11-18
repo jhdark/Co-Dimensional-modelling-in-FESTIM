@@ -171,6 +171,21 @@ The Be/BeO parameters were checked against Hodille's paper
 as the configured git user with no `Co-Authored-By` trailer. Push access to
 `origin` works over HTTPS.
 
+**Be/BeO update, 2026-11-18.** `be_beo.py` now reads the raw MD time series
+(`data/D_trapped_at_0001.csv`, `data/D_trapped_at_000-1.csv`, about 2770 frames
+each) and starts the interface from the first MD frame, as Hodille's Eqs. (7)
+and (8) do with their time delay. It previously started from zero, which left
+a visible early offset. `be_beo_error.csv` holds Hodille's error measure
+(integral of the absolute difference over the integral of the MD curve): 3.2 to
+5.3 % on the raw series at 750 and 1250 K, against 5.7 to 10.4 % from a zero
+start. **The 1000 K columns of the raw files are scrambled**: the rows alternate
+between two curves below about 6 ns and the column disagrees with the published
+Fig. 12 up to about 13 ns, while the 750 and 1250 K columns reproduce it. The
+script falls back to the digitised points at 1000 K (errors 5.4 and 8.5 %) until
+a corrected file arrives. `main.tex` has not been changed to match: it needs a
+sentence on the initial concentration, the error figures in place of
+`\TODO{quantify the error}`, and the 1000 K source settled first.
+
 Things found that the authors should know:
 
 - **The fixed W concentration of the thesis is not sustainable by diffusion.**

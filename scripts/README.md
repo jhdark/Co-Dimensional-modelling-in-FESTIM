@@ -27,7 +27,7 @@ figure from the committed CSV without solving.
 | `0-method/` | Sec. 3 | `illustration.py` | `illustration.pdf` | seconds |
 | `0-method/` | Sec. 3.4 | `convergence.py` | `convergence.csv`, `convergence.pdf` | 2 min |
 | `1-coolant-channel/` | Sec. 4 | `benchmark.py` (uses `model.py`, `cases.py`) | `efficiency.csv`, `startup.csv`, `permeator.pdf` | 1 min |
-| `2-interface-trapping/` | Sec. 5 | `be_beo.py` | `be_beo.csv`, `be_beo.pdf` | 1 min |
+| `2-interface-trapping/` | Sec. 5 | `be_beo.py` | `be_beo.csv`, `be_beo_error.csv`, `be_beo.pdf` | 1 min |
 | `2-interface-trapping/` | Sec. 5 | `w_cu_network.py` (uses `silva_solis.py`) | `w_cu_network*.csv`, `w_cu_network.pdf` | 3 min |
 | `2-interface-trapping/` | Sec. 5 | `sweep.py` (uses `model.py`, `parameters.py`) | `delay.csv`, `transients.csv`, `interface_trapping.pdf` | 20 min |
 | `3-polycrystal/` | Sec. 6 | `results.py` (uses `model.py`, `voronoi.py`) | `breakthrough.csv`, `snapshot_2d.npz`, `polycrystal.pdf` | 3 min |
@@ -41,7 +41,7 @@ by all of them.
 |---|---|---|
 | `0-method` | dimensionless | illustration and verification only |
 | `1-coolant-channel` | Rader, Greenwood and Humrickhouse 2018, Tables I to III; analytical solution of Humrickhouse and Merrill 2015 | solubility units and the FLiBe inlet concentration are **inferred** (they recover the published regime number); neither paper is in `references.bib` yet |
-| `2-interface-trapping/be_beo.py` | Hodille et al. 2022 (DOI 10.1088/1361-648X/ac8328): Eq. (6), Table 1 rate constants, n_i = 1e20 m-2, c_Be = 5e27 m-3; MD points digitised from their Fig. 12 (`data/hodille_2022_data.csv`) | all checked against the paper; nothing nominal |
+| `2-interface-trapping/be_beo.py` | Hodille et al. 2022 (DOI 10.1088/1361-648X/ac8328): Eq. (6), Table 1 rate constants, n_i = 1e20 m-2, c_Be = 5e27 m-3; raw MD time series supplied by the authors (`data/D_trapped_at_*.csv`) at 750 and 1250 K, points digitised from their Fig. 12 (`data/hodille_2022_data.csv`) at 1000 K; initial interface concentration from the first MD frame | rate parameters checked against the paper; **the 1000 K columns of the raw files are scrambled** (two interleaved curves below 6 ns, disagreement with Fig. 12 up to 13 ns) and are not used |
 | `2-interface-trapping/w_cu_network.py` | Silva-Solis thesis (HAL tel-04750846), Ch. 5: Table 1 barriers, Wert-Zener frequencies, Table 3 corrections | reproduces the thesis; nothing nominal except the reservoir |
 | `2-interface-trapping/sweep.py` | same thesis | the collapse of the path onto three states is **ours**; layer thicknesses and surface concentration are **nominal** |
 | `3-polycrystal` | dimensionless | no grain-boundary property is sourced; microstructure-scale modelling proper is left to the FESTIM-Microstructure paper |
