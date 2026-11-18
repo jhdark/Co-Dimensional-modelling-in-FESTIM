@@ -120,14 +120,13 @@ Finally, the grain-boundary network of a Voronoi polycrystal is described as a s
 % ===============================================================
 
 Hydrogen isotope transport in materials governs fuel retention, permeation losses and tritium accountancy in fusion systems~\cite{meschini_impact_2025, meschini_modeling_2023}.
-Predicting these quantities at the component scale relies on macroscopic transport codes such as \FESTIM{}~\cite{dark_festim_2026}, \TMAP{}8~\cite{simon_moose-based_2025}, \textsc{tessim-x}~\cite{schmid_implications_2024} and \MHIMS{}~\cite{hodille_macroscopic_2015}.
-These codes solve diffusion and trapping equations on a meshed domain.
+Predicting these quantities at the component scale relies on macroscopic transport codes such as \FESTIM{}~\cite{dark_festim_2026}, \TMAP{}8~\cite{simon_moose-based_2025}, \textsc{tessim-x}~\cite{schmid_implications_2024} and \MHIMS{}~\cite{hodille_macroscopic_2015},
+which solve diffusion and trapping equations on a meshed domain.
 
 Fusion components contain features that are far thinner than the components themselves.
 Examples include the interfaces between materials, grain boundaries, cracks and coolant channels.
 These features often control the transport of hydrogen.
-An interface can trap hydrogen and delay permeation~\cite{hodille_molecular_2022, silva-solis_hydrogen_2026}.
-A grain boundary can act as a fast diffusion path, and a flowing liquid carries away what permeates into it.
+For example, an interface can trap hydrogen and delay permeation~\cite{hodille_molecular_2022, silva-solis_hydrogen_2026}, a grain boundary can act as a fast diffusion path \TODO{citation needed},  and a flowing liquid carries away what permeates into it.
 However, resolving such a feature in the mesh of a larger component is costly.
 It drives both the number of cells and their aspect ratio.
 
@@ -141,10 +140,7 @@ To address them, this work presents a co-dimensional description of thin feature
 The feature is represented as a subdomain of one dimension less than the mesh, called a manifold.
 It carries its own transport equation and exchanges a flux with the bulk.
 The formulation, its implementation and its verification are described in Sec.~\ref{sec:method}.
-It is then applied to three cases, each compared with a reference where one exists.
-The first is a permeator tube with the flowing liquid carried on a manifold (Sec.~\ref{sec:app:pfr}).
-The second is an interface carrying its own inventory, at Be/BeO and at W/Cu (Sec.~\ref{sec:app:interface}).
-The third is a grain-boundary network in a polycrystal (Sec.~\ref{sec:app:gb}).
+It is then applied to three cases: a permeator tube with the flowing liquid carried on a manifold (Sec.~\ref{sec:app:pfr}), an interface carrying its own inventory, at Be/BeO and at W/Cu (Sec.~\ref{sec:app:interface}), and a grain-boundary network in a polycrystal (Sec.~\ref{sec:app:gb}).
 The second case extends a companion paper, in which interfaces are treated as reactive surfaces with no stored inventory. \TODO{cite the companion once it has a number}
 
 The implementation is available in \FESTIM{} 2.2. \VERIFY{release version at submission}
@@ -160,11 +156,11 @@ An interfacial plane or a grain boundary is of atomic width, inside a component 
 A mesh that resolves such a feature pays for it along its whole extent.
 Three treatments are commonly used to avoid this.
 
-The first is homogenisation, in which the feature is folded into an effective diffusivity of the surrounding material. \TODO{cite Hart; Fisher}
+The first is homogenisation, in which the feature is folded into an effective diffusivity of the surrounding material \cite{hart_diffusion_1957, harrison_diffusion_1961, oriani_diffusion_1970}.
 The concentration in the feature is then no longer a variable of the model.
 Neither the inventory held in the feature nor the flux carried along it can be reported.
 
-The second is an algebraic interface condition, in which continuity of chemical potential is imposed on the two bulk concentrations.
+The second is an algebraic interface condition, in which continuity of chemical potential is imposed on the two bulk concentrations. \TODO{Citation}
 The interface then holds no inventory and has no time scale of its own.
 However, molecular dynamics simulations of the Be/BeO interface show trapping sites localised at the interface, which fill over a finite time~\cite{hodille_molecular_2022}.
 Rate-equation modelling of the W/Cu interface reaches the same conclusion~\cite{silva-solis_hydrogen_2026}.
@@ -194,10 +190,10 @@ The manifold may lie on the outer boundary, inside one subdomain, between two su
 It may also end inside the domain (see Fig.~\ref{fig:illustration}).
 In each bulk subdomain, the transport of mobile hydrogen is unchanged from \FESTIM{}~\cite{dark_festim_2026}:
 \begin{equation}
-    \frac{\partial c_i}{\partial t} = \nabla \cdot \left( D_i \nabla c_i \right) + S_i \quad \text{in } \Omega_i
+    \frac{\partial c_i}{\partial t} = \nabla \cdot \left( D_i \nabla c_i \right) + S_i \quad \text{in } \Omega_i,
     \label{eq:bulk}
 \end{equation}
-where $c_i$ is the mobile concentration in $\Omega_i$, $D_i$ is the diffusivity and $S_i$ is a source term.
+where $c_i$ is the mobile concentration, $D_i$ is the diffusivity and $S_i$ is a source term on the $i$th subdomain $\Omega_i$.
 Trapping and reactions are available as usual and are omitted here for brevity.
 
 \begin{figure*}
@@ -217,7 +213,7 @@ The manifold carries the same balance, written with the tangential operator:
     \label{eq:gradG}
 \end{equation}
 where $c_\Gamma$ is the concentration on the manifold, $D_\Gamma$ is its diffusivity, $\mathbf{u}$ is a drift velocity and $S_\Gamma$ is a source term.
-$\mathbf{n}$ is the unit normal to $\Gamma$, and $J_i$ is the flux received from $\Omega_i$.
+$\mathbf{n}$ is the unit normal to $\Gamma$, $\textbf{I}$ is a $d$-dimensional identity matrix, and $J_i$ is the flux received from $\Omega_i$.
 The sum runs over the bulk subdomains adjacent to $\Gamma$.
 Equation~\ref{eq:gradG} removes the normal component of the gradient, so only the tangential part of $\mathbf{u}$ acts on the manifold.
 
@@ -250,7 +246,7 @@ This limit is derived for an interface in Sec.~\ref{sec:app:interface:setup}.
 
 Each subdomain has its own function space, defined on its own submesh: the cells of $\Omega_i$ and the facets of $\Gamma$.
 First-order Lagrange elements are used throughout.
-With test functions $v_i$ and $w$, and omitting outer boundary terms, the weak form reads:
+With test functions $v_i$ and $w$, and omitting outer boundary terms, the weak forms of Eqs.~\ref{eq:bulk} and ~\ref{eq:manifold} read:
 \begin{equation}
     \int_{\Omega_i} \left( \frac{\partial c_i}{\partial t} v_i + D_i \nabla c_i \cdot \nabla v_i - S_i v_i \right) \mathrm{d}x + \int_\Gamma J_i\, v_i \,\mathrm{d}s = 0
     \label{eq:weak:bulk}
@@ -261,15 +257,15 @@ With test functions $v_i$ and $w$, and omitting outer boundary terms, the weak f
     \label{eq:weak:manifold}
 \end{multline}
 The drift term of Eq.~\ref{eq:weak:manifold} is integrated by parts.
-An end of the manifold with no condition applied therefore carries zero total flux, and an outlet requires an explicit outflow condition.
+An end of a manifold with no boundary condition applied therefore carries zero total flux, and an outlet requires an explicit outflow condition.
 Time derivatives are discretised with the backward Euler scheme, as in the rest of \FESTIM{}.
 
 The two integrals of Eq.~\ref{eq:weak:manifold} require different integration domains.
 The tangential terms are integrated on the submesh of $\Gamma$, where $\gradG$ is defined.
 The exchange terms are integrated on the facets of the parent mesh, where the bulk fields can be evaluated.
 \textsc{dolfinx}~\cite{baratta_dolfinx_2023} compiles one integration domain per form.
-The residual is therefore split into groups, which are accumulated into a single vector and a single matrix. \TODO{cite scifem; acknowledge the assembly callbacks adapted from J. S. Dokken}
-The system remains monolithic: one Newton solve is performed per time step, with no sub-iteration between the manifold and the bulk.
+The residual is therefore split into groups, which are accumulated into a single vector and a single matrix \cite{dokken_scifem_2025}. \TODO{acknowledge the assembly callbacks adapted from J. S. Dokken}
+One Newton solve is performed per time step, with no sub-iteration between the manifold and the bulk.
 
 Inside the mesh, $\Gamma$ is integrated over interior facets, and each exchange term is restricted to one side.
 One exchange is therefore declared per adjacent subdomain.
@@ -317,7 +313,7 @@ A pair of subdomains is separated either by an algebraic interface condition or 
 \label{sec:method:verification}
 % ---------------------------------------------------------------
 
-The implementation is verified with the method of manufactured solutions on the unit square and the unit cube, with $\Gamma$ one face of the domain.
+The implementation is verified with the method of manufactured solutions on a unit square and unit cube, with $\Gamma$ being one edge and one face of the domain, respectively..
 With a linear exchange $J = k \left( c - c_\Gamma \right)$, the exact solution is chosen as:
 \begin{equation}
     \begin{aligned}
@@ -326,7 +322,7 @@ With a linear exchange $J = k \left( c - c_\Gamma \right)$, the exact solution i
     \end{aligned}
     \label{eq:mms}
 \end{equation}
-where $\left( \xi_0, \xi_1 \right)$ are coordinates attached to the domain, with $\Gamma$ at $\xi_0 = 0$.
+where $\left( \xi_0, \xi_1 \right)$ are coordinates ofo the domain, with $\Gamma$ at $\xi_0 = 0$.
 The sources follow from Eqs.~\ref{eq:bulk} and~\ref{eq:manifold}.
 The exchange flux, $J = D \cos \left( \pi \xi_1 \right)$, varies along $\Gamma$.
 In 3D, the cube is rotated so that $\Gamma$ is aligned with no coordinate axis, which exercises Eq.~\ref{eq:gradG}.
@@ -338,7 +334,7 @@ In 3D, the cube is rotated so that $\Gamma$ is aligned with no coordinate axis, 
     \label{fig:convergence}
 \end{figure}
 
-The relative $L^2$ error of both fields decreases at second order, as expected for first-order elements (see Fig.~\ref{fig:convergence}).
+The relative $L^2$ error of both fields decreases at second order, as expected for first-order finite elements (see Fig.~\ref{fig:convergence}).
 The fitted orders are \num{2.00} in 2D and \num{1.97} in 3D.
 The \FESTIM{} test suite additionally covers conservation across an interior manifold, independence from the order of declaration, triple junctions and radial coordinates.
 
@@ -380,7 +376,7 @@ The second law makes the exchange nonlinear in the wall concentration.
 
 A fixed concentration $c_\mathrm{in}$ is applied at the inlet of the manifold and an outflow condition at its outlet.
 The concentration is set to zero on the outer surface of the wall.
-Two published cases are considered: Pb-17Li in a RAFM steel tube, and FLiBe in a nickel tube. \TODO{cite Rader et al. 2018}
+Two published cases are considered: Pb-17Li in a RAFM steel tube, and FLiBe in a nickel tube \cite{rader_extraction_2018}. 
 Their parameters are given in Table~\ref{tab:permeator}.
 For a Sieverts liquid, the steady extraction efficiency $\eta = 1 - c_\mathrm{f}(L)/c_\mathrm{in}$ of a tube of length $L$ and inner diameter $d$ has an analytical solution: \TODO{cite Humrickhouse and Merrill 2015}
 \begin{equation}
@@ -395,7 +391,7 @@ The Henry case also has an analytical solution, expressed with the Lambert $W$ f
 
 \begin{table}
     \centering
-    \caption{Parameters of the two permeator cases. \TODO{cite Rader et al. 2018} \VERIFY{solubility units and the FLiBe inlet concentration are inferred from the published regime number}}
+    \caption{Parameters of the two permeator cases. Taken from \cite{rader_extraction_2018}. \VERIFY{solubility units and the FLiBe inlet concentration are inferred from the published regime number}}
     \label{tab:permeator}
     \begin{tabular}{lll}
         \hline
@@ -422,7 +418,7 @@ The Henry case also has an analytical solution, expressed with the Lambert $W$ f
 % ---------------------------------------------------------------
 
 At steady state, the extraction efficiency along the tube agrees with the analytical solution within \num{2e-5} for both cases (see Fig.~\ref{fig:coolant}a).
-At the outlet, the efficiency is \num{0.690} for Pb-17Li and \num{0.415} for FLiBe, which are the published values.
+At the outlet, the efficiency is \num{0.690} for Pb-17Li and \num{0.415} for FLiBe, which agrees with the published values.
 It should be noted that the FLiBe case is limited by mass transfer in the liquid.
 It therefore tests the film term of Eq.~\ref{eq:pfr:J} more than the nonlinear equilibrium of Eq.~\ref{eq:pfr:eq}.
 
@@ -433,8 +429,7 @@ It therefore tests the film term of Eq.~\ref{eq:pfr:J} more than the nonlinear e
     \label{fig:coolant}
 \end{figure*}
 
-The analytical solution describes neither a transient nor a variation of the wall along the tube.
-Both are available here at no extra cost, since the wall is resolved and the two fields share a time step.
+While the analytical solution describes an axially independent, steady-state configuration, both spatial variance along the wall of the tube are easily added to the numerical implementation since the wall is resolved and the two concentration fields share a time step.
 As an example, the start-up of the Pb-17Li case was simulated from a tube full of liquid at $c_\mathrm{in}$ and an empty wall.
 The outlet efficiency reaches its steady value after approximately one transit time $L/u$ (see Fig.~\ref{fig:coolant}b). \VERIFY{the slight overshoot, on a finer mesh}
 In this model, the liquid adds only one degree of freedom per facet of the inner surface. \TODO{cell count and solve time}
@@ -462,7 +457,7 @@ The exchange with material $i$ consists of a trapping jump from the bulk and a d
 \end{equation}
 where $\nu$ are jump frequencies following an Arrhenius law and $\lambda_i$ is the jump distance in material $i$.
 The product $\lambda_i c_i$ is the areal density of bulk atoms within reach of the interface.
-At steady state with no net flux and $\theta \ll 1$, Eqs.~\ref{eq:interface:J} and~\ref{eq:interface:balance} give:
+At steady state with no net flux and $\theta \ll 1$, Eqs.~\ref{eq:interface:J} and~\ref{eq:interface:balance} give \TODO{cite companion paper?}:
 \begin{equation}
     \frac{c_2}{c_1} = \frac{\nu_{1 \rightarrow \Gamma}\, \lambda_1\, \nu_{\Gamma \rightarrow 2}}{\nu_{\Gamma \rightarrow 1}\, \nu_{2 \rightarrow \Gamma}\, \lambda_2}
     \label{eq:interface:lte}
@@ -521,14 +516,14 @@ This is due to the supply from the bulk, which the manifold accounts for and a m
 For the bilayer, the steady permeation flux is that of the equilibrium condition within \qty{1.4}{\percent}, as Eq.~\ref{eq:interface:lte} requires.
 The difference is attributed to site blocking, and is largest where the coverage is highest.
 The transient differs when the layers are thin and cold.
-At \qty{340}{\kelvin}, breakthrough is delayed by \qty{5}{\percent} for \qty{6}{\milli\metre} of tungsten, and by a factor of \num{3.5e4} for \qty{6}{\micro\metre} (see Fig.~\ref{fig:interface}).
+At \qty{340}{\kelvin}, breakthrough is delayed by \qty{5}{\percent} for \qty{6}{\milli\metre} of tungsten, and by a factor of \num{3.5e4} for \qty{6}{\micro\metre} (see Fig.~\ref{fig:interface}). \TODO{Fix disagreement of $L_w$ with Fig. 6}
 In the thin layer, the interface holds \qty{8e18}{\per\metre\squared}, against \qty{4e14}{\per\metre\squared} in the two bulk layers, and its coverage reaches \num{0.57}.
 An algebraic condition represents neither.
 
 \begin{figure*}
     \centering
     \includegraphics[width=\textwidth]{interface_trapping}
-    \caption{Temporal evolution of the back-face flux of a W/Cu bilayer at \qty{340}{\kelvin} (a) and breakthrough time relative to the equilibrium condition as a function of tungsten thickness (b), with the interface described as a manifold.}
+    \caption{Temporal evolution of the back-face flux of a W/Cu bilayer at \qty{340}{\kelvin} (a) and breakthrough time relative to the equilibrium condition as a function of tungsten thickness (b), with the interface described as a manifold. \TODO{Fix legend placement on left panel}}
     \label{fig:interface}
 \end{figure*}
 
@@ -544,9 +539,10 @@ The equilibrium condition is therefore adequate for a monoblock, and inadequate 
 \subsection{Model setup}
 \label{sec:app:gb:setup}
 % ---------------------------------------------------------------
+\TODO{Include a comparison to the analytical approximations derived by Fisher/Hart?}
 
-Grain boundaries can act as fast diffusion paths for hydrogen. \TODO{cite Fisher; grain-boundary diffusion data}
-The third application considers a 2D Voronoi tessellation of 30 grains in a square of side $L$.
+Grain boundaries can act as fast diffusion paths for hydrogen \cite{fisher_grain_boundary_1951, diaz-rodriguez_direct_2022}. \TODO{cite grain-boundary diffusion data}
+The third application considers a 2D Voronoi tessellation of 30 grains in a square of side $L$ \cite{virtanen_scipy_2020}.
 It is meshed so that every boundary lies on facets.
 Each grain is a bulk subdomain with its own concentration $c_g$.
 The whole boundary network is one manifold, adjacent to every grain, with a single field.
@@ -566,7 +562,6 @@ Hydrogen passes from one grain to the next only through the boundary between the
 A unit concentration is applied on one face of the square, to the grains and to the ends of the boundaries in equilibrium with them.
 The concentration is set to zero on the opposite face.
 The case is dimensionless, with $D_\mathrm{gb}/D = 10^{3}$, $k_\mathrm{t} L / D = 10^{2}$ and $k_\mathrm{t}/(k_\mathrm{d} L) = 10^{-2}$.
-It is a demonstration on a synthetic microstructure, and none of these values is taken from a measurement.
 
 % ---------------------------------------------------------------
 \subsection{Results}
@@ -645,16 +640,21 @@ The exchange rates remain the main uncertainty of such models.
 Nevertheless, a co-dimensional description allows rates obtained at the atomic scale to be used in component-scale simulations without resolving the feature in the mesh.
 
 % ===============================================================
-% \section*{Acknowledgements}
+\section*{Acknowledgements}
 % ===============================================================
 
 % ===============================================================
-\section{Data availability}
+\section*{Data availability}
 \label{sec:data}
 % ===============================================================
 
 The scripts, data and figures of this paper are available at \url{https://github.com/jhdark/Co-Dimensional-modelling-in-FESTIM}. \TODO{Zenodo DOI once minted}
 The implementation is part of \FESTIM{} 2.2~\cite{dark_festim_2026}, and its tests are the files \texttt{test\_codim1\_*.py} of the \FESTIM{} test suite.
+
+\section*{AI-Usage Statement}
+
+Extensive use of Claude Opus 5.5 was made in this work, including additions to the codebase, generation of plots and visuals, and the initial generation of this manuscript. The publishing authors take full responsibility for its content. 
+
 
 % ===============================================================
 \bibliographystyle{elsarticle-num}
