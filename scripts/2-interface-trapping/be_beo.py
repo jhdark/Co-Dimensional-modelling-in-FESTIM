@@ -17,13 +17,17 @@ DOI 10.1088/1361-648X/ac8328 (postprint HAL hal-03736200).
 
     d c_I/dt = nu_trap lambda c_Be (1 - c_I / N_SITES) - nu_detrap c_I
 
-MD DATA: ``data/D_trapped_at_0001.csv`` and ``data/D_trapped_at_000-1.csv`` are the raw
-time series behind their Fig. 12, supplied by the authors. They are used at 750 and
-1250 K. Their 1000 K columns are NOT used: over the first 6 ns the rows alternate
-between two separate curves, and the column disagrees with the published figure up to
-about 13 ns, whereas the 750 and 1250 K columns reproduce it. Until a corrected file is
-supplied, the 1000 K points are those digitised from Fig. 12
-(``data/hodille_2022_data.csv``).
+MD DATA: ``data/new_data/D_trapped_at_<interface>_<T>K.csv`` are the raw time series
+behind their Fig. 12, one file per interface and temperature, supplied by E. A. Hodille
+from a rerun of the simulations (second delivery, 2026-11-24).
+
+The 1000 K files are not in time order: a fault in the post-processing of the MD
+trajectory shuffled the frames below about 5 ns and wrote 447 of them twice. Each row
+carries its own time, so sorting by time and dropping the repeated rows recovers one
+series of 2771 frames. The 750 and 1250 K files are already in order. The first delivery
+(``data/D_trapped_at_0001.csv``, ``data/D_trapped_at_000-1.csv``) had one shared time
+column, which made the 1000 K column look like two interleaved curves; it is no longer
+read, and neither are the points digitised from Fig. 12 (``data/hodille_2022_data.csv``).
 
 In FESTIM the interface is a point manifold (``dim=0``) on the end of a 1D beryllium
 slab. The slab is a reservoir: thick and fast enough that it stays uniform.
@@ -108,27 +112,18 @@ def run(interface, T, c_0):
     return t, c, exact
 
 
-RAW_FILES = {"0001": "D_trapped_at_0001.csv", "0001b": "D_trapped_at_000-1.csv"}
-DIGITISED_ONLY = [1000.0]  # raw column unusable, see the docstring
+RAW_NAMES = {"0001": "0001", "0001b": "000-1"}
 
 
 def md_data():
-    """The MD points as {(interface, T): (t in s, c_I in m-2)}."""
+    """The MD points as {(interface, T): (t in s, c_I in m-2)}, in time order."""
     out = {}
-    for interface, name in RAW_FILES.items():
-        raw = pd.read_csv(HERE / "data" / name)
+    for interface, name in RAW_NAMES.items():
         for T in TEMPERATURES:
-            if T not in DIGITISED_ONLY:
-                out[(interface, T)] = np.array([raw["time(ns)"] * 1e-9, raw[f"N_D_at_{T:.0f}K"]])
-    path = HERE / "data" / "hodille_2022_data.csv"
-    with open(path) as f:
-        names = f.readline().strip().split(",")
-    raw = pd.read_csv(path, skiprows=2, header=None)
-    for i in range(0, len(names) - 1, 2):
-        T, interface = names[i].split("_")
-        if float(T) in DIGITISED_ONLY:
-            xy = raw[[i, i + 1]].apply(pd.to_numeric, errors="coerce").dropna().to_numpy()
-            out[(interface, float(T))] = xy[np.argsort(xy[:, 0])].T
+            raw = pd.read_csv(HERE / "data" / "new_data" / f"D_trapped_at_{name}_{T:.0f}K.csv")
+            # the 1000 K files are shuffled and hold repeated rows, see the docstring
+            raw = raw.drop_duplicates().sort_values("time(ns)", kind="stable")
+            out[(interface, T)] = np.array([raw["time(ns)"] * 1e-9, raw["N_D"]])
     return out
 
 
@@ -143,14 +138,12 @@ def main():
     for interface in TRAPPING:
         for T in TEMPERATURES:
             t_md, c_md = md[(interface, T)]
-            # raw series: the first frame. Digitised points: the mean of the earliest five
-            c_0 = c_md[:5].mean() if T in DIGITISED_ONLY else c_md[0]
+            c_0 = c_md[0]
             t, c, exact = run(interface, T, c_0)
             t, c, exact = np.insert(t, 0, 0.0), np.insert(c, 0, c_0), np.insert(exact, 0, c_0)
             rows.append(pd.DataFrame({"interface": interface, "T": T, "t": t,
                                       "c_i": c, "exact": exact}))
             errors.append({"interface": interface, "T": T, "c_0": c_0,
-                           "md_source": "digitised" if T in DIGITISED_ONLY else "raw",
                            "relative_error": relative_error(t_md, c_md, t, c)})
             print(interface, T, "final c_I", c[-1], "max rel. diff to exact",
                   np.max(np.abs(c[1:] - exact[1:]) / exact[1:]),
@@ -168,9 +161,8 @@ def plot():
         for T, colour in zip(TEMPERATURES, PALETTE):
             sub = df[(df.interface == interface) & (df["T"] == T)]
             t_md, c_md = md[(interface, T)]
-            raw = T not in DIGITISED_ONLY
-            ax.plot(t_md * 1e9, c_md, "o", ms=1.2 if raw else 2.2, color=colour,
-                    alpha=0.3 if raw else 0.45, mew=0, rasterized=True)
+            ax.plot(t_md * 1e9, c_md, "o", ms=1.2, color=colour, alpha=0.3, mew=0,
+                    rasterized=True)
             ax.plot(sub.t * 1e9, sub.c_i, color=colour, label=f"{T:.0f} K")
         ax.set_xlabel("Time (ns)")
         ax.set_xlim(0, FINAL_TIME * 1e9)
