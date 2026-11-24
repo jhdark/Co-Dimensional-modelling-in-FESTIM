@@ -171,20 +171,31 @@ The Be/BeO parameters were checked against Hodille's paper
 as the configured git user with no `Co-Authored-By` trailer. Push access to
 `origin` works over HTTPS.
 
-**Be/BeO update, 2026-11-18.** `be_beo.py` now reads the raw MD time series
-(`data/D_trapped_at_0001.csv`, `data/D_trapped_at_000-1.csv`, about 2770 frames
-each) and starts the interface from the first MD frame, as Hodille's Eqs. (7)
-and (8) do with their time delay. It previously started from zero, which left
-a visible early offset. `be_beo_error.csv` holds Hodille's error measure
-(integral of the absolute difference over the integral of the MD curve): 3.2 to
-5.3 % on the raw series at 750 and 1250 K, against 5.7 to 10.4 % from a zero
-start. **The 1000 K columns of the raw files are scrambled**: the rows alternate
-between two curves below about 6 ns and the column disagrees with the published
-Fig. 12 up to about 13 ns, while the 750 and 1250 K columns reproduce it. The
-script falls back to the digitised points at 1000 K (errors 5.4 and 8.5 %) until
-a corrected file arrives. `main.tex` has not been changed to match: it needs a
-sentence on the initial concentration, the error figures in place of
-`\TODO{quantify the error}`, and the 1000 K source settled first.
+**Be/BeO data, settled 2026-11-24.** `be_beo.py` reads the raw MD time series
+behind Hodille's Fig. 12 and starts the interface from the first MD frame, as
+his Eqs. (7) and (8) do with their time delay. The data are six files, one per
+interface and temperature, in `scripts/2-interface-trapping/data/new_data/`
+(`D_trapped_at_<0001|000-1>_<T>K.csv`, columns `time(ns),N_D`), sent by
+E. A. Hodille on 2026-11-24. The 1000 K files are **not in time order**: a fault
+in his post-processing shuffled the frames below about 5 ns and wrote 447 of
+them twice. Each row carries its own time, so the script sorts by time and drops
+repeated rows, which leaves one series of 2771 frames. Do not plot these files
+with lines between consecutive rows. The first delivery (2026-11-18,
+`data/D_trapped_at_0001.csv` and `data/D_trapped_at_000-1.csv`, one shared time
+column) made the 1000 K column look like two interleaved curves lying below the
+published figure; that was this same shuffling, and those files are no longer
+read. `be_beo_error.csv` holds Hodille's error measure (integral of the absolute
+difference over the integral of the MD curve): 3.2, 6.3 and 3.9 % at 750, 1000
+and 1250 K for (0001), and 4.9, 5.3 and 5.3 % for (000-1). The note sent with
+the data says the simulations were rerun and that values may sit slightly above
+the paper's because of a different surface area. `main.tex` was updated on 2026-11-24:
+initial concentration in the setup, the error range (3.2 to 6.3 %) and the
+late-time agreement (within 8 % over the last 5 ns) in the results, and "within
+6.3 %" in the conclusions. A `\VERIFY{}` there asks how to acknowledge the
+rerun data. **No refit** (user, 2026-11-24): the rates stay Hodille's Table 1.
+The model plateau sits 3 to 8 % below the MD on five of six curves, probably
+because Table 1 was fitted to the original runs; a free fit per curve only
+reaches 2.7 to 5.1 %, so the rest is scatter of single MD trajectories.
 
 Things found that the authors should know:
 
@@ -236,8 +247,8 @@ What the first draft still needs, in rough order:
    and FLiBe inlet concentration of the permeator table; the start-up overshoot;
    serial-only status; the "not available elsewhere" claim.
 4. **Numbers still missing**: cell counts and solve times for the cost
-   statements (Applications 1 and 3); an error measure for Be/BeO against MD;
-   representative feature widths in the motivation.
+   statements (Applications 1 and 3); representative feature widths in the
+   motivation.
 5. **Style pass.** The draft follows the rules in this file mechanically
    (checked: no sentence over 25 words, one sentence per line, no em dashes, no
    "rather than", no "closure"). It uses no "we" at all, following `STYLE.md`

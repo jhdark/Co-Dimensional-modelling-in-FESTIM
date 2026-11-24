@@ -469,6 +469,7 @@ Three cases are considered.
 The first is the Be/BeO interface, for which Hodille et al. simulated deuterium trapping by molecular dynamics at \qtylist{750;1000;1250}{\kelvin}~\cite{hodille_molecular_2022}.
 No exchange was observed on the BeO side, so $J_2 = 0$.
 The jump frequencies, $n_\Gamma = \qty{e20}{\per\metre\squared}$ and a beryllium concentration of \qty{5e27}{\per\metre\cubed} are taken from that reference.
+The interface is not empty at the start of the molecular dynamics record, so $c_\Gamma$ starts from the value of the first frame.
 
 The second case is the multi-site model of the W/Cu interface of Silva-Sol\'is et al.~\cite{silva-solis_hydrogen_2026}. \VERIFY{cite the thesis for the tables used}
 It contains fourteen sites across the interface, joined by three diffusion paths, with barriers obtained from density functional theory.
@@ -486,7 +487,10 @@ It should be noted that nothing in these cases is fitted, and that the third is 
 \label{sec:app:interface:results}
 % ---------------------------------------------------------------
 
-For Be/BeO, the interface concentration follows the molecular dynamics results at both interfaces and at all three temperatures (see Fig.~\ref{fig:bebeo}). \TODO{quantify the error}
+For Be/BeO, the interface concentration follows the molecular dynamics results at both interfaces and at all three temperatures (see Fig.~\ref{fig:bebeo}).
+The error is measured as in the reference, as the integral of the absolute difference divided by the integral of the molecular dynamics curve.
+It lies between \qty{3.2}{\percent} and \qty{6.3}{\percent} over the six curves.
+Over the last \qty{5}{\nano\second}, the model lies within \qty{8}{\percent} of the molecular dynamics. \VERIFY{the MD series are a rerun supplied by E. A. Hodille, not the data of the published figure; the rates were fitted to the original runs, which may explain the model sitting low at late times. Decide how to acknowledge the data.}
 This case is a single rate equation.
 Its value lies in the fact that rates fitted to molecular dynamics enter a component-scale model unchanged.
 
@@ -630,7 +634,7 @@ The implementation converges at second order against a manufactured solution, in
 Three applications were presented.
 A permeator tube with the liquid carried on a manifold reproduced published extraction efficiencies of \num{0.690} and \num{0.415}.
 The efficiency along the tube was within \num{2e-5} of the analytical solution.
-An interface described as a manifold reproduced molecular dynamics results at Be/BeO, and a fourteen-site rate-equation model at W/Cu within \qtyrange{3}{19}{\percent}.
+An interface described as a manifold reproduced molecular dynamics results at Be/BeO within \qty{6.3}{\percent}, and a fourteen-site rate-equation model at W/Cu within \qtyrange{3}{19}{\percent}.
 In a W/Cu bilayer, the interfacial inventory left the steady flux unchanged within \qty{1.4}{\percent}.
 However, it delayed breakthrough by a factor of \num{3.5e4} for \qty{6}{\micro\metre} of tungsten at \qty{340}{\kelvin}.
 Finally, the grain-boundary network of a Voronoi polycrystal was described as a single manifold, which carried 31 times the flux of the grains.
