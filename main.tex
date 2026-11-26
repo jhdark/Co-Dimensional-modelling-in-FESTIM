@@ -12,7 +12,9 @@
 \usepackage{wasysym}
 \usepackage[dvipsnames]{xcolor}
 \usepackage{enumitem}
-\usepackage[colorlinks = true, linkcolor = blue, urlcolor  = blue, citecolor = blue]{hyperref}
+% Better line-breaking for long URLs (especially in two-column layouts)
+\usepackage{xurl}
+\usepackage[colorlinks = true, linkcolor = blue, urlcolor  = blue, citecolor = blue, breaklinks = true]{hyperref}
 \usepackage{pythonhighlight}
 \usepackage{lipsum}  % filler text while drafting, remove before submission
 
@@ -127,36 +129,9 @@ Fusion components contain features that are far thinner than the components them
 Examples include the interfaces between materials, grain boundaries, cracks and coolant channels.
 These features often control the transport of hydrogen.
 For example, an interface can trap hydrogen and delay permeation~\cite{hodille_molecular_2022, silva-solis_hydrogen_2026}, a grain boundary can act as a fast diffusion path \TODO{citation needed},  and a flowing liquid carries away what permeates into it.
-However, resolving such a feature in the mesh of a larger component is costly.
-It drives both the number of cells and their aspect ratio.
+However, resolving such a feature in the mesh of a larger component is costly, as can it drive up both the number of cells and their aspect ratio.
 
-The existing treatments avoid this cost by removing the feature from the model, and each discards something in doing so.
-A homogenised property loses the state of the feature.
-An algebraic interface condition loses the inventory of the interface and its kinetics.
-Coupling to an external system code loses the monolithic solution of the fluid and the solid.
-These limitations are detailed in Sec.~\ref{sec:motivation}.
-
-To address them, this work presents a co-dimensional description of thin features in \FESTIM{}.
-The feature is represented as a subdomain of one dimension less than the mesh, called a manifold.
-It carries its own transport equation and exchanges a flux with the bulk.
-The formulation, its implementation and its verification are described in Sec.~\ref{sec:method}.
-It is then applied to three cases: a permeator tube with the flowing liquid carried on a manifold (Sec.~\ref{sec:app:pfr}), an interface carrying its own inventory, at Be/BeO and at W/Cu (Sec.~\ref{sec:app:interface}), and a grain-boundary network in a polycrystal (Sec.~\ref{sec:app:gb}).
-The second case extends a companion paper, in which interfaces are treated as reactive surfaces with no stored inventory. \TODO{cite the companion once it has a number}
-
-The implementation is available in \FESTIM{} 2.2.
-All the results presented in this paper can be reproduced with the scripts archived on Zenodo~\cite{james_dark_2026_24349184} and described in Sec.~\ref{sec:data}.
-
-% ===============================================================
-\section{Motivation}
-\label{sec:motivation}
-% ===============================================================
-
-The features considered here are separated in scale from the components that contain them.
-An interfacial plane or a grain boundary is of atomic width, inside a component of millimetre scale. \TODO{representative widths, with citations}
-A mesh that resolves such a feature pays for it along its whole extent.
-Three treatments are commonly used to avoid this.
-
-The first is homogenisation, in which the feature is folded into an effective diffusivity of the surrounding material \cite{hart_diffusion_1957, harrison_diffusion_1961, oriani_diffusion_1970}.
+Three treatments are commonly used to circumvent the computational cost. The first is homogenisation, in which the feature is folded into an effective diffusivity of the surrounding material \cite{hart_diffusion_1957, harrison_diffusion_1961, oriani_diffusion_1970}.
 The concentration in the feature is then no longer a variable of the model.
 Neither the inventory held in the feature nor the flux carried along it can be reported.
 
@@ -170,8 +145,21 @@ The coupling is then explicit, and the two models do not share a time step.
 
 A manifold keeps what these treatments discard.
 It has its own field, its own transport terms, boundary conditions and exports, and it is solved together with the bulk.
-Mixed-dimensional coupling of this kind is established in other fields, for instance for flow in fractured porous media. \TODO{cite: D'Angelo and Quarteroni; Boon, Nordbotten and Yotov; Kuchta et al.}
+Mixed-dimensional coupling of this kind is already established in other fields, for instance for flow in fractured porous media. \TODO{cite: D'Angelo and Quarteroni; Boon, Nordbotten and Yotov; Kuchta et al.}
 To our knowledge, it has not been available in a hydrogen transport code alongside trapping and multi-species reactions. \VERIFY{}
+
+
+
+To address them, this work presents a co-dimensional description of thin features in \FESTIM{} 2.2.
+The feature is represented as a subdomain of one dimension less than the mesh, called a manifold.
+It carries its own transport equation and exchanges a flux with the bulk.
+The formulation, its implementation and its verification are described in Sec.~\ref{sec:method}.
+It is then applied to three cases: a permeator tube with the flowing liquid carried on a manifold (Sec.~\ref{sec:app:pfr}), an interface carrying its own inventory, at Be/BeO and at W/Cu (Sec.~\ref{sec:app:interface}), and a grain-boundary network in a polycrystal (Sec.~\ref{sec:app:gb}).
+The second case extends a companion paper, in which interfaces are treated as reactive surfaces with no stored inventory \cite{delaportemathurin2026chemicalpotentialcontinuityfails}. All the results presented in this paper can be reproduced with the scripts archived on Zenodo~\cite{james_dark_2026_24349184} and described in Sec.~\ref{sec:data}.
+
+% ===============================================================
+
+
 
 % TODO(structure): section title. Alternatives: "Methodology",
 %   "Co-dimensional formulation and its implementation".
@@ -457,7 +445,7 @@ The exchange with material $i$ consists of a trapping jump from the bulk and a d
 \end{equation}
 where $\nu$ are jump frequencies following an Arrhenius law and $\lambda_i$ is the jump distance in material $i$.
 The product $\lambda_i c_i$ is the areal density of bulk atoms within reach of the interface.
-At steady state with no net flux and $\theta \ll 1$, Eqs.~\ref{eq:interface:J} and~\ref{eq:interface:balance} give \TODO{cite companion paper?}:
+At steady state with no net flux and $\theta \ll 1$, Eqs.~\ref{eq:interface:J} and~\ref{eq:interface:balance} give \cite{} \TODO{cite companion paper?}:
 \begin{equation}
     \frac{c_2}{c_1} = \frac{\nu_{1 \rightarrow \Gamma}\, \lambda_1\, \nu_{\Gamma \rightarrow 2}}{\nu_{\Gamma \rightarrow 1}\, \nu_{2 \rightarrow \Gamma}\, \lambda_2}
     \label{eq:interface:lte}
@@ -545,7 +533,7 @@ The equilibrium condition is therefore adequate for a monoblock, and inadequate 
 % ---------------------------------------------------------------
 \TODO{Include a comparison to the analytical approximations derived by Fisher/Hart?}
 
-Grain boundaries can act as fast diffusion paths for hydrogen \cite{fisher_grain_boundary_1951, diaz-rodriguez_direct_2022}. \TODO{cite grain-boundary diffusion data}
+Grain boundaries can act as fast diffusion paths for hydrogen \cite{fisher_grain_boundary_1951, diaz-rodriguez_direct_2022}. 
 The third application considers a 2D Voronoi tessellation of 30 grains in a square of side $L$ \cite{virtanen_scipy_2020}.
 It is meshed so that every boundary lies on facets.
 Each grain is a bulk subdomain with its own concentration $c_g$.
@@ -558,8 +546,8 @@ The boundaries have no thickness: the network carries an areal density $\sigma$,
     \end{aligned}
     \label{eq:gb}
 \end{equation}
-where $D_\mathrm{gb}$ is the diffusivity along the boundaries, $k_\mathrm{t}$ is a trapping velocity and $k_\mathrm{d}$ is a detrapping rate.
-The ratio $k_\mathrm{t}/k_\mathrm{d}$ is a segregation length.
+where $D_\mathrm{gb}$ is the diffusivity along the boundaries, $k_\mathrm{t}$ is a ``trapping velocity" with units of m$\cdot$s$^{-1}$ and $k_\mathrm{d}$ is a detrapping rate with units of s$^{-1}$.
+The ratio $k_\mathrm{t}/k_\mathrm{d}$ thus sets a segregation length.
 
 Since one field lives on a connected network, hydrogen crosses a triple junction with no junction condition to write.
 Hydrogen passes from one grain to the next only through the boundary between them.
@@ -611,10 +599,8 @@ An inconsistent choice gives a model that runs and conserves the wrong quantity,
 \label{sec:discussion:limitations}
 % ---------------------------------------------------------------
 
-Only codimension one is supported.
-A line in a 3D mesh is excluded, since a bulk field has no well-defined value on such a line.
 Networks and interior manifolds currently run in serial. \VERIFY{status at submission}
-The resolution along the manifold is that of the parent mesh, and drift-dominated transport is not stabilised.
+The resolution along the manifold is that of the parent mesh, and drift-dominated transport is not stabilised. Only codimension one is supported; for example, a line in a 3D mesh is excluded, since a bulk field has no well-defined value on such a line. However, nested co-dimensional coupling (e.g. a line coupled to a plane, which is itself coupled to a volume) is possible and will be implemented in future work.
 
 The main uncertainty lies in the exchange law.
 For most interfaces and grain boundaries, the rates are not measured, and are available from atomistic calculations only for a few systems.
@@ -641,13 +627,13 @@ Finally, the grain-boundary network of a Voronoi polycrystal was described as a 
 
 The interface and grain-boundary cases are demonstrations on published or assumed parameters, and are not validations against permeation data.
 The exchange rates remain the main uncertainty of such models.
-Nevertheless, a co-dimensional description allows rates obtained at the atomic scale to be used in component-scale simulations without resolving the feature in the mesh.
+Nevertheless, a co-dimensional description allows rates obtained at the atomic scale to be used in component-scale simulations without resolving the feature in the mesh. This enables further intricacy in \FESTIM{} hydrogen transport simulations, providing a tool to advance understanding hydrogen behavior in materials.  
 
 % ===============================================================
 \section*{Acknowledgements}
 % ===============================================================
 
-We are grateful for J. Dokken's discussion and insights during the course of this work. 
+We are grateful for J\o{}rgen Dokken's discussion and insights during the course of this work. 
 
 % ===============================================================
 \section*{Data availability}
